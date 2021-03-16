@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "502035857322",
+    "firebase_url": "https://stgrowgrow-efea2-default-rtdb.firebaseio.com",
+    "project_id": "stgrowgrow-efea2",
+    "storage_bucket": "stgrowgrow-efea2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502035857322:android:e814e90c94bbf127d2f5d3",
+        "android_client_info": {
+          "package_name": "com.station.stgrowgrow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "502035857322-v3f3b0dup0inkvha0o0nt2putbaope9t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.station.stgrowgrow",
+            "certificate_hash": "c13847f023c78a8e29e407b184f7dfceb7ef428b"
+          }
+        },
+        {
+          "client_id": "502035857322-bcvge1dcc30sl3jvi4gr5gd62inecgs6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoMWqU8qlXO6dp1xVWDiFYxMsKuzAmt1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502035857322-bcvge1dcc30sl3jvi4gr5gd62inecgs6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

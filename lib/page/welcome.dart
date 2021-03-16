@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/enum.dart';
+import 'package:stgrowgrow/page/homepage.dart';
 import 'package:stgrowgrow/page/onboarding.dart';
+import 'package:stgrowgrow/page/signin.dart';
 import 'package:stgrowgrow/state/authstate.dart';
+import 'package:stgrowgrow/page/signup.dart';
 
 
 
@@ -52,7 +55,7 @@ class _WelcomePageState extends State<Welcomepage> {
                     ),
                   );
                   } , child: Text('온보딩', style: TextStyle( color: Colors.blueAccent),),
-                )
+                ),
 
 
 
@@ -71,10 +74,9 @@ class _WelcomePageState extends State<Welcomepage> {
                     var state = Provider.of<AuthState>(context, listen: false);
                     Navigator.push(
                       context,
-                      MaterialPage(
+                      MaterialPageRoute(
                         builder: (context) =>
-
-
+                            SignIn(loginCallback: state.getCurrentUser),
                       ),
                     );
                     },
@@ -100,7 +102,7 @@ class _WelcomePageState extends State<Welcomepage> {
       body: state.authStatus == AuthStatus.NOT_LOGGED_IN ||
             state.authStatus == AuthStatus.NOT_DETERMINED
           ? _body()
-          :
+          : HomePage(),
 
     );
 
