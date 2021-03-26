@@ -43,6 +43,9 @@ class _WelcomePageState extends State<Welcomepage> {
     Widget _body(){
       return SafeArea(
           child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 40,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -67,8 +70,11 @@ class _WelcomePageState extends State<Welcomepage> {
 
                 ),
                 _submitButton(),
-                Text('계정이 이미 있으신가요?', style: TextStyle( color: Colors.blueAccent),
-                ),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children:<Widget>[
+                    Text('이미계정이 있으신가요?'),
                 InkWell(
                   onTap: () {
                     var state = Provider.of<AuthState>(context, listen: false);
@@ -88,8 +94,11 @@ class _WelcomePageState extends State<Welcomepage> {
                     ),
 
                   ),
-                )
+                ),
+                  ],
+                ),
               ],
+
             ),
           ),
       );

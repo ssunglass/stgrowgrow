@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/helper/utility.dart';
+import 'package:stgrowgrow/widgets/customwidgets.dart';
 
 
 
@@ -22,7 +23,7 @@ class _SignInState extends State<SignIn> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   CustomLoader loader;
-  final GlobalKey<ScaffoldMessengerState> _scaffoldkey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -39,7 +40,7 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
-  Widget _entryFeild(String hint,
+  Widget _entryField(String hint,
       {TextEditingController controller, bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
@@ -73,12 +74,20 @@ class _SignInState extends State<SignIn> {
         if(onPressed != null)
           onPressed();
       },
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Colors.blueAccent,
+        ),
+      ),
     );
 
  }
 
  Widget _emailLoginButton(BuildContext context) {
     return Container(
+      width: fullWidth(context),
+      margin: EdgeInsets.symmetric(vertical: 35),
       child: TextButton(
         onPressed: _emailLogin,
         child: Text('로그인'),
@@ -94,18 +103,18 @@ class _SignInState extends State<SignIn> {
     }
     loader.showLoader(context);
     var isValid = Utility.validateCrendentials(
-      _scaffoldkey, _emailController.text, _passwordController.text);
+      _scaffoldKey, _emailController.text, _passwordController.text);
     if (isValid) {
       state
          .signIn(_emailController.text, _passwordController.text,
-               scaffoldKey: _scaffoldkey)
+               scaffoldKey: _scaffoldKey)
           .then((status) {
        if (state.user != null) {
          loader.hideLoader();
          Navigator.pop(context);
          widget.loginCallback();
        }else{
-         cprint('로그인 할 수 없습니다.',errorIn: '_emailLoginButton');
+         cprint('Unable to login',errorIn: '_emailLoginButton');
          loader.hideLoader();
        }
 
@@ -126,8 +135,8 @@ class _SignInState extends State<SignIn> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 150),
-            _entryFeild('Enter email', controller: _emailController),
-            _entryFeild('Enter password',
+            _entryField('Enter email', controller: _emailController),
+            _entryField('Enter password',
                 controller: _passwordController, isPassword: true),
             _emailLoginButton(context),
             SizedBox(height: 20),
@@ -150,12 +159,10 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldkey,
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('로그인'),
-
-
-
+        centerTitle: true,
       ),
       body: _body(context),
     );

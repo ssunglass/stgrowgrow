@@ -35,7 +35,7 @@ class _SplashPageState extends State<SplashPage> {
   void timer() async {
     final isAppUpdated = await _checkAppVersion();
     if(isAppUpdated) {
-      print('앱이 업데이트 되었습니다.');
+      print('App is updated');
      Future.delayed(Duration(seconds: 1 )).then((_){
        var state =Provider.of<AuthState>(context, listen: false);
        state.getCurrentUser();
@@ -49,7 +49,7 @@ class _SplashPageState extends State<SplashPage> {
     final appVersion = await _getAppVersionFromFirebaseConfig();
     if (appVersion != currentAppVersion) {
       if(kDebugMode) {
-        cprint("어플이 최신버전이 아닙니다");
+        cprint("Latest version of app is not installed on your system");
         cprint(
             "In debug mode we are not restrict devlopers to redirect to update screen");
         cprint(

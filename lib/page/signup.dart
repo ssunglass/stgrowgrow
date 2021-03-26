@@ -1,5 +1,7 @@
 import 'dart:math';
+import 'dart:convert';
 
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +10,8 @@ import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/model/user.dart';
+import 'package:stgrowgrow/helper/utility.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -23,12 +27,52 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup>{
+
+
   TextEditingController _nameController;
   TextEditingController _emailController;
   TextEditingController _passwordController;
   TextEditingController _confirmController;
   TextEditingController _nicknameController;
   CustomLoader loader;
+
+  String _selectedItem = '인문';
+  List _options = ['인문','공학','사회','교육','자연','의약','예체능'];
+  List<String> interestList = [
+    "코딩",
+    "마케팅",
+    "음악",
+    "요리",
+    "광고"
+  ];
+
+  List<String> selectedinterestList = [];
+
+  _showReportDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          //Here we will build the content of the dialog
+          return AlertDialog(
+            title: Text("관심분야"),
+            content: MultiSelectChip(
+              interestList,
+              onSelectionChanged: (selectedList) {
+                setState(() {
+                  selectedinterestList = selectedList;
+                });
+              },
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("선택"),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          );
+        });
+  }
+
   final _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = new GlobalKey<ScaffoldMessengerState>();
   @override
@@ -53,15 +97,33 @@ class _SignupState extends State<Signup>{
     super.dispose();
   }
 
-  Widget _entryFeild(String hint,
+  Widget _entryField(String hint,
       {TextEditingController controller,
         bool isPassword = false,
         bool isEmail = false})  {
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent,
+        borderRadius: BorderRadius.circular(50),
+      ),
       child: TextField(
         controller: controller,
         keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
         obscureText: isPassword,
+        decoration: InputDecoration(
+          hintText: hint,
+          border: InputBorder.none,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(50),
+            ),
+            borderSide: BorderSide(color: Colors.blueAccent),
+
+          ),
+          contentPadding: EdgeInsets.symmetric(vertical: 15,horizontal:20,)
+
+        ),
 
       ),
 
@@ -76,17 +138,13 @@ class _SignupState extends State<Signup>{
         onPressed: _submitForm,
         child: Text('회원가입', style: TextStyle(color: Colors.blueAccent),),
 
+
       ),
     );
   }
 
-  void _googleLogin() {
 
 
-
-
-  }
-  
   void _submitForm() {
     if (_nameController.text.isEmpty) {
       customSnackBar(_scaffoldKey, '이름을 입력해주세요');
@@ -113,6 +171,7 @@ class _SignupState extends State<Signup>{
     }
 
 
+
     loader.showLoader(context);
     var state = Provider.of<AuthState>(context, listen: false);
     Random random = new Random();
@@ -125,6 +184,8 @@ class _SignupState extends State<Signup>{
       summary: '한줄요약',
       bio: '바이오 적기',
       displayName: _nameController.text.trim(),
+      major: _selectedItem,
+      interestList: selectedinterestList,
 
 
 
@@ -159,6 +220,54 @@ class _SignupState extends State<Signup>{
   }
 
 
+ Widget _dropdownbutton(BuildContext context ) {
+    return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('전공분야'),
+            DropdownButton(
+                value: _selectedItem,
+                items: _options
+                          .map(
+                        (major) => DropdownMenuItem(
+                          child: Text(major),
+                          value: major,
+                        ),
+                )
+                .toList(),
+              onChanged: (value) {
+                  setState(() {
+                    _selectedItem = value;
+                  });
+              },
+            )
+          ],
+        ),
+      );
+
+ }
+
+ Widget _choicechip(BuildContext context ) {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+            child: Text("클릭"),
+            onPressed: () => _showReportDialog(),
+          ),
+          Text(selectedinterestList.join(" , ")),
+        ],
+      ),
+    );
+
+ }
+
+
+
 
 
 
@@ -173,15 +282,20 @@ class _SignupState extends State<Signup>{
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _entryFeild('Name', controller: _nameController),
-            _entryFeild('NickName', controller: _nicknameController),
-            _entryFeild('Enter email',
+            _entryField('Name', controller: _nameController),
+            _entryField('NickName', controller: _nicknameController),
+            //_dropdownformbutton(context),
+            _choicechip(context),
+            _entryField('Enter email',
                 controller: _emailController, isEmail: true),
+            _dropdownbutton(context),
             // _entryFeild('Mobile no',controller: _mobileController),
-            _entryFeild('Enter password',
+            _entryField('Enter password',
                 controller: _passwordController, isPassword: true),
-            _entryFeild('Confirm password',
+            _entryField('Confirm password',
                 controller: _confirmController, isPassword: true),
+
+
             _submitButton(context),
 
             Divider(height: 30),
@@ -216,7 +330,59 @@ class _SignupState extends State<Signup>{
     
     
   }
-  
 
 }
+
+
+
+
+
+class MultiSelectChip extends StatefulWidget {
+  final List<String> interestList;
+  final Function(List<String>) onSelectionChanged;
+
+  MultiSelectChip(this.interestList, {this.onSelectionChanged});
+
+  @override
+  _MultiSelectChipState createState() => _MultiSelectChipState();
+}
+
+class _MultiSelectChipState extends State<MultiSelectChip> {
+  List<String> selectedChoices = [];
+
+  _buildChoiceList() {
+    List<Widget> choices =[];
+
+    widget.interestList.forEach((item) {
+      choices.add(Container(
+        padding: const EdgeInsets.all(2.0),
+        child: ChoiceChip(
+          label: Text(item),
+          selected: selectedChoices.contains(item),
+          onSelected: (selected) {
+            setState(() {
+              selectedChoices.contains(item)
+                  ? selectedChoices.remove(item)
+                  : selectedChoices.add(item);
+              widget.onSelectionChanged(selectedChoices);
+            });
+          },
+        ),
+      ));
+    });
+
+    return choices;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: _buildChoiceList(),
+    );
+  }
+}
+
+
+
+
 

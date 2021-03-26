@@ -17,6 +17,8 @@ class Routes {
   }
 
 
+
+
   static Route onGenerateRoute(RouteSettings settings) {
     final List<String> pathElements = settings.name.split('/');
     if(pathElements[0] != '' || pathElements.length ==1) {

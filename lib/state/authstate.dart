@@ -11,11 +11,15 @@ import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/page/signup.dart';
+import 'package:stgrowgrow/model/keyword.dart';
 import 'package:firebase_database/firebase_database.dart' as dabase;
 
 
 
 class AuthState extends AppState{
+
+  bool isBusy = false;
+
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   bool isSignInWithGoogle = false;
   User user;
@@ -24,11 +28,24 @@ class AuthState extends AppState{
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   dabase.Query _profileQuery;
-
   List<UserModel> _profileUserModelList;
   UserModel _userModel;
 
   UserModel get userModel => _userModel;
+
+  UserModel get profileUserModel {
+    if(_profileUserModelList != null && _profileUserModelList.length > 0) {
+      return _profileUserModelList.last;
+    }else {
+      return null;
+    }
+  }
+
+  void removeLastUser() {
+    _profileUserModelList.removeLast();
+
+  }
+
 
 
   Future<String> signIn(String email, String password,
@@ -40,7 +57,7 @@ class AuthState extends AppState{
       user = result.user;
       userId= user.uid;
       return user.uid;
-    }catch(error) {
+    } catch(error) {
       loading = false;
       cprint(error, errorIn: 'signIn');
       kAnalytics.logLogin(loginMethod: 'email_login');
@@ -80,7 +97,7 @@ class AuthState extends AppState{
   }
 
   createUser(UserModel user, {bool newUser = false}) {
-    if (newUser) {
+    if (newUser) {user.userName=
       Utility.getUserName(name: user.nickName);
       kAnalytics.logEvent(name: 'create_newUser');
 
@@ -95,6 +112,21 @@ class AuthState extends AppState{
     }
     loading = false;
   }
+
+  createKeyword(KeyModel model, UserModel user) {
+    isBusy = true;
+    notifyListeners();
+    try{
+      kDatabase.child('profile').child(user.userId).child('keyword').push().set(model.toJson());
+    }catch(error) {
+      cprint(error,errorIn: 'createKey');
+
+
+    }
+    isBusy = false;
+    notifyListeners();
+  }
+
 
 
   databaseInit() {

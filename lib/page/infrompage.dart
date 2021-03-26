@@ -28,6 +28,10 @@ class _InformPageState extends State<InformPage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+
+
+    );
 
 
   }
