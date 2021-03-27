@@ -1,5 +1,10 @@
+import 'package:stgrowgrow/model/user.dart';
+
+
 class KeyModel{
   String keyword;
+  UserModel user;
+  String userId;
 
 
 
@@ -8,6 +13,8 @@ class KeyModel{
 
 
     this.keyword,
+    this.user,
+    this.userId,
 
 
   });
@@ -18,6 +25,9 @@ class KeyModel{
     }
 
     keyword = map['keyword'];
+    user = UserModel.fromJson(map['user']);
+    userId = map['userId'];
+
 
 
 
@@ -28,6 +38,8 @@ class KeyModel{
     return{
 
       'keyword' : keyword,
+      "user": user == null ? null : user.toJson(),
+      "userId": userId,
 
     };
 

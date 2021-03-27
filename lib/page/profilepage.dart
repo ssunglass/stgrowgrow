@@ -6,6 +6,7 @@
 
 
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,8 @@ import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/model/keyword.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
+import 'package:stgrowgrow/widgets/key.dart';
+
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key, this.profileId}) : super(key: key);
@@ -112,16 +115,15 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _keyList(BuildContext context, AuthState authstate,
-      List<UserModel> keyList, ) {
-    List<UserModel> list;
+      List<KeyModel> keyList, ) {
+    List<KeyModel> list;
 
-    authstate.isbusy
+    return authstate.isbusy
     ? Container(
         height: fullHeight(context) - 180,
     child: CustomScreenLoader(
     height: double.infinity,
     width: fullWidth(context),
-    backgroundColor: Colors.white,
     ),
 
     )
@@ -131,18 +133,19 @@ class _ProfilePageState extends State<ProfilePage>
       padding: EdgeInsets.only(top: 50, left: 30, right: 30),
       child: Title(
         title: isMyProfile
-            ? '키워를 등록헤주세요'
+            ? '키워드를 등록헤주세요'
             : '${authstate.profileUserModel.userName} 키워드 등록을 해주세요' ,
       ),
 
     )
 
-        : GridView.builder(
+        : ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 0),
       itemCount: list.length,
       itemBuilder: (context, index) => Container(
-        child: Chip(
-
+        child: Keyword(
+          model: list[index],
+          isDisplayOnProfile: true,
 
         ),
 
@@ -213,7 +216,13 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context);
+    List<KeyModel> list;
     String id = widget.profileId ?? authstate.userId;
+
+    if(authstate.keylist != null && authstate.keylist.length >0) {
+      list = authstate.keylist.where((x) => x.userId == id).toList();
+
+    }
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -221,10 +230,22 @@ class _ProfilePageState extends State<ProfilePage>
         floatingActionButton: !isMyProfile ? null : _floatingActionButton(),
         key: scaffoldKey,
         backgroundColor: Colors.white,
-        body: UserProfileWidget(
-            user: authstate.profileUserModel,
-            isMyProfile: isMyProfile
-        ),
+        body: NestedScrollView(
+          body: Wrap(
+            children: [
+
+              _keyList(context, authstate, list)
+            ],
+          ),
+
+
+
+
+        )
+
+
+
+
       ),
     );
   }

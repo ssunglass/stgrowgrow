@@ -29,6 +29,7 @@ class AuthState extends AppState{
 
   dabase.Query _profileQuery;
   List<UserModel> _profileUserModelList;
+  List<KeyModel> _keylist;
   UserModel _userModel;
 
   UserModel get userModel => _userModel;
@@ -127,6 +128,14 @@ class AuthState extends AppState{
     notifyListeners();
   }
 
+  List<KeyModel> get keylist {
+    if(_keylist == null) {
+      return null;
+    } else {
+      return List.from(_keylist.reversed);
+    }
+
+  }
 
 
   databaseInit() {
