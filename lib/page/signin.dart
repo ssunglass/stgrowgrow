@@ -102,7 +102,7 @@ class _SignInState extends State<SignIn> {
       return;
     }
     loader.showLoader(context);
-    var isValid = Utility.validateCrendentials(
+    var isValid = Utility.validateCredentials(
       _scaffoldKey, _emailController.text, _passwordController.text);
     if (isValid) {
       state

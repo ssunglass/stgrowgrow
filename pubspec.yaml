@@ -40,7 +40,10 @@ dependencies:
 
   firebase_remote_config: ^0.6.0
   introduction_screen: ^1.0.9
+
+  google_fonts: 1.1.2
   dropdownfield: ^1.0.3
+
 
   http: 0.12.2
 

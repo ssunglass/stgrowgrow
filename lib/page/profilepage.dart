@@ -6,16 +6,18 @@
 
 
 
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stgrowgrow/page/EditProfilePage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/model/keyword.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/widgets/key.dart';
+import 'package:stgrowgrow/widgets/emptyList.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -43,8 +45,6 @@ class _ProfilePageState extends State<ProfilePage>
 
     _keyword = TextEditingController();
 
-    var state = Provider.of<AuthState>(context, listen: false);
-
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var authstate = Provider.of<AuthState>(context, listen: false);
@@ -59,6 +59,21 @@ class _ProfilePageState extends State<ProfilePage>
     _keyword.dispose();
     super.dispose();
 
+  }
+
+  Widget _emptyBox() {
+    return SliverToBoxAdapter(child: SizedBox.shrink());
+  }
+
+  isFollower() {
+    var authstate = Provider.of<AuthState>(context, listen: false);
+    if (authstate.profileUserModel.followerList != null &&
+        authstate.profileUserModel.followerList.isNotEmpty) {
+      return (authstate.profileUserModel.followerList
+          .any((x) => x == authstate.userModel.userId));
+    } else {
+      return false;
+    }
   }
 
   Widget _entry(String title,
@@ -91,11 +106,11 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
     var state = Provider.of<AuthState>(context, listen: false);
-    var model = state.userModel;
 
     KeyModel keyModel = createKeyModel();
 
-    state.createKeyword(keyModel, model);
+
+    state.createKeyword(keyModel);
 
 
 
@@ -105,8 +120,11 @@ class _ProfilePageState extends State<ProfilePage>
 
   KeyModel createKeyModel() {
 
+    var authState = Provider.of<AuthState>(context,listen: false);
+
    KeyModel reply = KeyModel(
       keyword: _keyword.text,
+     userId: authState.userModel.userId
     );
 
    return reply;
@@ -115,48 +133,73 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _keyList(BuildContext context, AuthState authstate,
-      List<KeyModel> keyList, ) {
+      List<KeyModel> keyList ) {
     List<KeyModel> list;
 
+    if (keyList == null) {
+
+    } else {
+
+      list = keyList.toList();
+
+    }
+
     return authstate.isbusy
-    ? Container(
-        height: fullHeight(context) - 180,
-    child: CustomScreenLoader(
-    height: double.infinity,
-    width: fullWidth(context),
-    ),
+        ? Container(
+         height: fullHeight(context) - 180,
+         child: CustomScreenLoader(
+            height: double.infinity,
+           width: fullWidth(context),
+           backgroundColor: Colors.white,
+      ),
 
     )
 
-    : list == null || list.length < 1
-      ? Container(
-      padding: EdgeInsets.only(top: 50, left: 30, right: 30),
-      child: Title(
-        title: isMyProfile
-            ? '키워드를 등록헤주세요'
+
+        : list == null || list.length < 1
+        ? Container(
+          padding: EdgeInsets.only(top: 50, left: 30, right: 30),
+          child: NotifyText(
+           title: isMyProfile
+            ? '키워드를 등록해주세요'
             : '${authstate.profileUserModel.userName} 키워드 등록을 해주세요' ,
       ),
 
     )
 
-        : ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 0),
-      itemCount: list.length,
-      itemBuilder: (context, index) => Container(
-        child: Keyword(
-          model: list[index],
-          isDisplayOnProfile: true,
-
-        ),
 
 
-      ),
 
 
-    );
-    
+        : GridView.builder(
+           padding: EdgeInsets.symmetric(vertical: 0),
+           itemCount: list.length ,
+
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+           crossAxisSpacing: 10,
+             mainAxisSpacing: 10,
+
+           ),
+
+           itemBuilder: (context, index) => Container(
+             color: Colors.white60,
+             child: Keyword(
+                model: list[index],
+                isDisplayOnProfile: true,
+
+            ),
+
+
+         ),
+
+
+      );
+
 
   }
+
+
 
   Widget _floatingActionButton() {
     return FloatingActionButton(
@@ -192,16 +235,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
-    isFollower() {
-      var authstate = Provider.of<AuthState>(context, listen: false);
-      if (authstate.profileUserModel.followerList != null &&
-          authstate.profileUserModel.followerList.isNotEmpty) {
-        return (authstate.profileUserModel.followerList
-            .any((x) => x == authstate.userModel.userId));
-      } else {
-        return false;
-      }
-    }
+
 
 
     Future<bool> _onWillPop() async {
@@ -219,10 +253,10 @@ class _ProfilePageState extends State<ProfilePage>
     List<KeyModel> list;
     String id = widget.profileId ?? authstate.userId;
 
-    if(authstate.keylist != null && authstate.keylist.length >0) {
+    if (authstate.keylist != null && authstate.keylist.length > 0) {
       list = authstate.keylist.where((x) => x.userId == id).toList();
-
     }
+
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -230,23 +264,89 @@ class _ProfilePageState extends State<ProfilePage>
         floatingActionButton: !isMyProfile ? null : _floatingActionButton(),
         key: scaffoldKey,
         backgroundColor: Colors.white,
-        body: NestedScrollView(
-          body: Wrap(
-            children: [
-
-              _keyList(context, authstate, list)
-            ],
-          ),
-
-
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            UserProfileWidget(
+                user: authstate.profileUserModel,
+                isMyProfile: isMyProfile,
+              ),
 
 
-        )
+            ElevatedButton(
+              onPressed: () {
+                if (isMyProfile) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfilePage(),
+                    ),
+                  );
+
+                } else {
+                  authstate.followUser(
+                    removeFollower: isFollower(),
+                  );
+
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: isFollower()
+                      ? Colors.blue
+                      : Colors.white,
+                  border: Border.all(
+                      color: isMyProfile
+                          ? Colors.black87.withAlpha(180)
+                          : Colors.blue,
+                      width: 1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                /// If [isMyProfile] is true then Edit profile button will display
+// Otherwise Follow/Following button will be display
+                child: Text(
+                  isMyProfile
+                      ? 'Edit Profile'
+                      : isFollower()
+                      ? 'Following'
+                      : 'Follow',
+                  style: TextStyle(
+                    color: isMyProfile
+                        ? Colors.black87.withAlpha(180)
+                        : isFollower()
+                        ? Colors.white
+                        : Colors.blue,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+
+
+              ),
 
 
 
 
-      ),
+            ),
+
+            SizedBox(width: 30,),
+
+            _keyList(context, authstate, list),
+
+
+          ],
+
+
+        ),
+
+
+    )
     );
   }
 
@@ -301,11 +401,15 @@ class UserProfileWidget extends StatelessWidget {
 
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+
         SizedBox(height: 10,),
         Padding(
           padding: EdgeInsets.symmetric(
@@ -339,6 +443,12 @@ class UserProfileWidget extends StatelessWidget {
         child: Text(getSummary(user.summary),
         ),
         ),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Text('${user.interestList}'),
+        ),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Text('${user.major}'),
+        ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Text(
@@ -354,5 +464,7 @@ class UserProfileWidget extends StatelessWidget {
 
 
   }
+
+
 
 }

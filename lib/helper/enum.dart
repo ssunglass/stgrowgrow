@@ -3,3 +3,11 @@ enum AuthStatus {
   NOT_LOGGED_IN,
   LOGGED_IN,
 }
+
+enum SortUser {
+  Verified,
+  Alphabetically,
+  Newest,
+  Oldest,
+  MaxFollower,
+}

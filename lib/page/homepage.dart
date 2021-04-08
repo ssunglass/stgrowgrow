@@ -6,6 +6,7 @@ import 'package:stgrowgrow/page/profilepage.dart';
 import 'package:stgrowgrow/page/searchpage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/appstate.dart';
+import 'package:stgrowgrow/model/user.dart';
 import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/bottomMenuBar/bottomMenuBar.dart';
 
 
@@ -23,16 +24,18 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePageState extends State<HomePage> {
+
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = new GlobalKey<ScaffoldMessengerState>();
   final refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
   int pageIndex = 0;
 
   @override
-  void initState() {
+  void initState(  ) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      var state = Provider.of<AuthState>(context, listen: false);
+      var state = Provider.of<AppState>(context, listen: false);
       state.setpageIndex = 0;
       initProfile();
+      initKeyword();
 
 
 
@@ -46,6 +49,15 @@ class _HomePageState extends State<HomePage> {
   void initProfile() {
     var state = Provider.of<AuthState>(context, listen: false);
     state.databaseInit();
+
+
+  }
+
+  void initKeyword() {
+    var state = Provider.of<AuthState>(context,listen: false);
+    state.KeydatabaseInit();
+    state.getKeyDataFromDatabase();
+
 
 
   }

@@ -10,7 +10,6 @@ import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'package:stgrowgrow/page/signup.dart';
 import 'package:stgrowgrow/model/keyword.dart';
 import 'package:firebase_database/firebase_database.dart' as dabase;
 
@@ -28,8 +27,168 @@ class AuthState extends AppState{
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   dabase.Query _profileQuery;
-  List<UserModel> _profileUserModelList;
+  dabase.Query _keyQuery;
+
   List<KeyModel> _keylist;
+
+
+  List<KeyModel> get keylist {
+    if(_keylist == null) {
+      return null;
+    } else {
+      return List.from(_keylist.reversed);
+    }
+
+  }
+
+
+  Future<bool> KeydatabaseInit() {
+    try {
+      if (_keyQuery == null) {
+        _keyQuery = kDatabase.child('profile').child(user.uid).child('keyword');
+        _keyQuery.onChildAdded.listen(_onKeywordAdded);
+        _keyQuery.onValue.listen(_onKeywordChanged);
+        _keyQuery.onChildRemoved.listen(_onKeywordRemoved);
+      }
+
+      return Future.value(true);
+    } catch (error) {
+      cprint(error, errorIn: 'databaseInit');
+      return Future.value(false);
+    }
+  }
+
+
+
+  void getKeyDataFromDatabase(  ) {
+
+    try {
+      isBusy = true;
+      _keylist = null;
+      notifyListeners();
+      kDatabase.child('profile').child(user.uid).child('keyword').once().then((DataSnapshot snapshot) {
+        _keylist = [];
+        if (snapshot.value != null) {
+          var map = snapshot.value;
+          if (map != null) {
+            map.forEach((key, value) {
+              var model = KeyModel.fromJson(value);
+              model.key = key;
+              _keylist.add(model);
+
+            });
+
+          }
+        } else {
+          _keylist = null;
+        }
+        isBusy = false;
+        notifyListeners();
+      });
+    } catch (error) {
+      isBusy = false;
+      cprint(error, errorIn: 'getDataFromDatabase');
+    }
+
+
+
+
+  }
+
+  createKeyword(KeyModel model) {
+    isBusy = true;
+    notifyListeners();
+    try{
+      kDatabase.child('profile').child(user.uid).child('keyword').push().set(model.toJson());
+    } catch (error) {
+      cprint(error,errorIn: 'createKey');
+
+
+    }
+    isBusy = false;
+    notifyListeners();
+  }
+
+  deleteKeyword() {
+
+    try {
+      kDatabase.child('profile').child(user.uid).child('keyword')
+          .remove()
+          .then((_) {
+        cprint('Keyword deleted');
+      });
+    } catch (error) {
+      cprint(error,errorIn: 'deletedKeyword');
+    }
+  }
+
+  _onKeywordAdded(Event event) {
+    KeyModel keyword = KeyModel.fromJson(event.snapshot.value);
+    keyword.key = event.snapshot.key;
+
+
+    keyword.key = event.snapshot.key;
+    if (_keylist == null) {
+      _keylist = [];
+    }
+    if (_keylist.length == 0 || _keylist.any((x) => x.key != keyword.key)
+    ) {
+      _keylist.add(keyword);
+      cprint('Keyword Added');
+    }
+    isBusy = false;
+    notifyListeners();
+  }
+
+  _onKeywordChanged(Event event) {
+    var model = KeyModel.fromJson(event.snapshot.value);
+    model.key = event.snapshot.key;
+    if (_keylist.any((x) => x.key == model.key)) {
+      var oldEntry = _keylist.lastWhere((entry) {
+        return entry.key == event.snapshot.key;
+      });
+      _keylist[_keylist.indexOf(oldEntry)] = model;
+    }
+
+
+    if (event.snapshot != null) {
+      cprint('Keyword updated');
+      isBusy = false;
+      notifyListeners();
+    }
+
+
+
+  }
+
+
+  _onKeywordRemoved(Event event) async {
+    KeyModel keyword = KeyModel.fromJson(event.snapshot.value);
+    keyword.key = event.snapshot.key;
+
+    try{
+      KeyModel deletedKeyword;
+      if(_keylist.any((x) => x.key == keyword.key)) {
+        deletedKeyword = _keylist.firstWhere((x) => x.key == keyword.key);
+        _keylist.remove(deletedKeyword);
+      }
+
+      if(_keylist.length == 0) {
+        _keylist = null;
+      }
+      cprint('Keyword delted');
+
+    } catch (error) {
+      cprint(error, errorIn: '_onKeywordRemoved');
+    }
+
+
+
+  }
+
+
+  List<UserModel> _profileUserModelList;
+
   UserModel _userModel;
 
   UserModel get userModel => _userModel;
@@ -114,28 +273,9 @@ class AuthState extends AppState{
     loading = false;
   }
 
-  createKeyword(KeyModel model, UserModel user) {
-    isBusy = true;
-    notifyListeners();
-    try{
-      kDatabase.child('profile').child(user.userId).child('keyword').push().set(model.toJson());
-    }catch(error) {
-      cprint(error,errorIn: 'createKey');
 
 
-    }
-    isBusy = false;
-    notifyListeners();
-  }
 
-  List<KeyModel> get keylist {
-    if(_keylist == null) {
-      return null;
-    } else {
-      return List.from(_keylist.reversed);
-    }
-
-  }
 
 
   databaseInit() {
@@ -241,6 +381,24 @@ class AuthState extends AppState{
 
   }
 
+  Future<void> updateUserProfile(UserModel userModel,
+      ) async {
+    try {
+        if (userModel != null) {
+          createUser(userModel);
+        } else {
+          createUser(_userModel);
+        }
+
+      Utility.logEvent('update_user');
+    } catch (error) {
+      cprint(error, errorIn: 'updateUserProfile');
+    }
+  }
+
+
+
+
   void updateFCMToken() {
     if(_userModel == null) {
       return;
@@ -254,6 +412,51 @@ class AuthState extends AppState{
 
 
   }
+
+
+  followUser({bool removeFollower = false}) {
+    try {
+      if (removeFollower) {
+
+        profileUserModel.followerList.remove(userModel.userId);
+
+
+        userModel.followingList.remove(profileUserModel.userId);
+        cprint('user removed from following list', event: 'remove_follow');
+      } else {
+
+        if (profileUserModel.followerList == null) {
+          profileUserModel.followerList = [];
+        }
+        profileUserModel.followerList.add(userModel.userId);
+        // Adding profile user to logged-in user's following list
+        if (userModel.followingList == null) {
+          userModel.followingList = [];
+        }
+        userModel.followingList.add(profileUserModel.userId);
+      }
+      // update profile user's user follower count
+      profileUserModel.followers = profileUserModel.followerList.length;
+      // update logged-in user's following count
+      userModel.following = userModel.followingList.length;
+      kDatabase
+          .child('profile')
+          .child(profileUserModel.userId)
+          .child('followerList')
+          .set(profileUserModel.followerList);
+      kDatabase
+          .child('profile')
+          .child(userModel.userId)
+          .child('followingList')
+          .set(userModel.followingList);
+      cprint('user added to following list', event: 'add_follow');
+      notifyListeners();
+    } catch (error) {
+      cprint(error, errorIn: 'followUser');
+    }
+  }
+
+
 
 
 

@@ -6,7 +6,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/keyword.dart';
+import 'package:stgrowgrow/widgets/title_text.dart';
+
 
 class Keyword extends StatelessWidget{
   final KeyModel model;
@@ -23,6 +27,13 @@ class Keyword extends StatelessWidget{
 
 
 
+  void _deltedKeyword(BuildContext context) {
+    var state = Provider.of<AuthState>(context, listen:false);
+    state.deleteKeyword();
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -34,7 +45,17 @@ class Keyword extends StatelessWidget{
             Container(
               child:InputChip(
                label: Text(model.keyword),
-                labelStyle: TextStyle(color: Colors.white),
+                labelStyle: TextStyle(color: Colors.black),
+                backgroundColor: Colors.blueAccent,
+                deleteIcon: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+
+                ),
+                onDeleted: () {
+                 _deltedKeyword(context);
+                 
+                },
 
               ),
 

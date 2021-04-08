@@ -25,7 +25,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPersistentFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       timer();
 
     });
@@ -43,52 +43,46 @@ class _SplashPageState extends State<SplashPage> {
     }
   }
 
-  Future<bool> _checkAppVersion() async{
+  Future<bool> _checkAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final currentAppVersion = "${packageInfo.version}";
     final appVersion = await _getAppVersionFromFirebaseConfig();
     if (appVersion != currentAppVersion) {
-      if(kDebugMode) {
+      if (kDebugMode) {
         cprint("Latest version of app is not installed on your system");
         cprint(
             "In debug mode we are not restrict devlopers to redirect to update screen");
         cprint(
             "Redirect devs to update screen can put other devs in confusion");
-
         return true;
       }
-      Navigator.pushReplacement(context,
-      MaterialPageRoute(
-        builder: (_) => UpdateApp(),
-      ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => UpdateApp(),
+        ),
       );
       return false;
-    }else {
+    } else {
       return true;
     }
   }
 
 
 
-  Future<String> _getAppVersionFromFirebaseConfig() async{
+  Future<String> _getAppVersionFromFirebaseConfig() async {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
     await remoteConfig.fetch(expiration: const Duration(minutes: 1));
     await remoteConfig.activateFetched();
     var data = remoteConfig.getString('appVersion');
-    if(data != null && data.isNotEmpty) {
+    if (data != null && data.isNotEmpty) {
       return jsonDecode(data)["key"];
-    }else{
+    } else {
       cprint(
           "Please add your app's current version into Remote config in firebase",
           errorIn: "_getAppVersionFromFirebaseConfig");
       return null;
     }
-
-
-
-
-
-
   }
 
   Widget _body() {

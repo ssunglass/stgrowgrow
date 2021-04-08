@@ -26,7 +26,7 @@ class _UpdateAppState extends State<UpdateApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChageAppLifecycleState(AppLifecycleState state){
+  void didChangeAppLifecycleState(AppLifecycleState state){
     if ( state == AppLifecycleState.resumed) {
       Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => SplashPage()));
