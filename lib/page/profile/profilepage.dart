@@ -10,13 +10,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stgrowgrow/page/EditProfilePage.dart';
+import 'package:stgrowgrow/helper/utility.dart';
+import 'file:///D:/Androidproject/stgrowgrow/lib/page/profile/EditProfilePage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/user.dart';
+import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/model/keyword.dart';
+import 'package:stgrowgrow/model/bio.dart';
+import 'package:stgrowgrow/widgets/biotile.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'package:stgrowgrow/widgets/key.dart';
+import 'package:stgrowgrow/widgets/keytile.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
 
 
@@ -33,7 +37,9 @@ class _ProfilePageState extends State<ProfilePage>
   with SingleTickerProviderStateMixin {
 
   TextEditingController _keyword;
+  TextEditingController _bio;
 
+  String date;
   bool isMyProfile = false;
   int pageIndex = 0;
   final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey<
@@ -44,6 +50,7 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
 
     _keyword = TextEditingController();
+    _bio = TextEditingController();
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -57,9 +64,12 @@ class _ProfilePageState extends State<ProfilePage>
 
   void dispose() {
     _keyword.dispose();
+    _bio.dispose();
     super.dispose();
 
   }
+
+
 
   Widget _emptyBox() {
     return SliverToBoxAdapter(child: SizedBox.shrink());
@@ -99,7 +109,8 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  void _submitButton() async {
+  void _keywordSubmitButton() async {
+
     if(_keyword.text == null || _keyword.text.isEmpty){
       return;
 
@@ -118,19 +129,72 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
+  void showYear() async {
+
+    DateTime picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      initialDate: DateTime(DateTime.now().year),
+      lastDate: DateTime(DateTime.now().year),
+
+    );
+    setState(() {
+      if (picked != null) {
+        date = picked.toString();
+      }
+    });
+    
+
+
+  }
+
+  void _bioSubmitButton() async {
+    if(_bio.text == null ||
+       _bio.text.isEmpty ||
+       _bio.text.length > 300) {
+      return;
+
+    }
+
+    var state = Provider.of<AuthState>(context, listen: false);
+
+
+   BioModel bioModel = createBioModel();
+   state.createBio(bioModel);
+
+    Navigator.of(context).pop();
+
+
+
+  }
+
   KeyModel createKeyModel() {
 
     var authState = Provider.of<AuthState>(context,listen: false);
 
-   KeyModel reply = KeyModel(
-      keyword: _keyword.text,
-     userId: authState.userModel.userId
+    KeyModel reply = KeyModel(
+        keyword: _keyword.text,
+        userId: authState.userModel.userId
     );
 
-   return reply;
+    return reply;
 
 
   }
+
+  BioModel createBioModel() {
+
+    BioModel reply = BioModel(
+        bio: _bio.text,
+       date: date,
+    );
+
+    return reply;
+
+
+  }
+
+
 
   Widget _keyList(BuildContext context, AuthState authstate,
       List<KeyModel> keyList ) {
@@ -172,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
         : GridView.builder(
-           padding: EdgeInsets.symmetric(vertical: 0),
+           padding: EdgeInsets.only(top: 50, left: 30, right: 30),
            itemCount: list.length ,
 
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -199,6 +263,45 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
+  Widget _bioList(BuildContext context, AuthState authstate,
+      List<BioModel> bioList, ) {
+    List<BioModel> list;
+
+
+    /// if [authState.isbusy] is true then an loading indicator will be displayed on screen.
+    return authstate.isbusy
+        ? Container(
+      height: fullHeight(context) - 180,
+      child: CustomScreenLoader(
+        height: double.infinity,
+        width: fullWidth(context),
+        backgroundColor: Colors.white,
+      ),
+    )
+
+    /// if tweet list is empty or null then need to show user a message
+        : list == null || list.length < 1
+        ? Container(
+      padding: EdgeInsets.only(top: 50, left: 30, right: 30),
+      child: NotifyText(
+        title: isMyProfile
+            ? '바이오를 등록해주세요'
+            : '${authstate.profileUserModel.userName} 바이오를 등록 해주세요' ,
+      ),
+    )
+
+    /// If tweets available then tweet list will displayed
+        : ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 0),
+      itemCount: list.length,
+
+      itemBuilder: (context, index) => Container(
+        color: Colors.white60,
+        child:  Bio()
+      ),
+    );
+  }
+
 
 
   Widget _floatingActionButton() {
@@ -214,7 +317,7 @@ class _ProfilePageState extends State<ProfilePage>
                   children: <Widget>[
                     _entry('keyword', controller: _keyword),
                     GestureDetector(
-                      onTap: _submitButton,
+                      onTap: _keywordSubmitButton,
                       child: Center(
                         child: Text('등록'),
                       ),
@@ -258,89 +361,71 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
 
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        floatingActionButton: !isMyProfile ? null : _floatingActionButton(),
-        key: scaffoldKey,
-        backgroundColor: Colors.white,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            UserProfileWidget(
-                user: authstate.profileUserModel,
-                isMyProfile: isMyProfile,
-              ),
-
-
-            ElevatedButton(
-              onPressed: () {
-                if (isMyProfile) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditProfilePage(),
-                    ),
-                  );
-
-                } else {
-                  authstate.followUser(
-                    removeFollower: isFollower(),
-                  );
-
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: isFollower()
-                      ? Colors.blue
-                      : Colors.white,
-                  border: Border.all(
-                      color: isMyProfile
-                          ? Colors.black87.withAlpha(180)
-                          : Colors.blue,
-                      width: 1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-
-                /// If [isMyProfile] is true then Edit profile button will display
-// Otherwise Follow/Following button will be display
-                child: Text(
-                  isMyProfile
-                      ? 'Edit Profile'
-                      : isFollower()
-                      ? 'Following'
-                      : 'Follow',
-                  style: TextStyle(
-                    color: isMyProfile
-                        ? Colors.black87.withAlpha(180)
-                        : isFollower()
-                        ? Colors.white
-                        : Colors.blue,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-
-
-              ),
-
+        appBar: AppBar(
+          actions: <Widget>[
+            Expanded(
+            child: ListTile(
+              title: Text('${authstate.userModel.displayName}',),
+              subtitle: Text('${authstate.userModel.userName}'),
+              trailing: Icon(Icons.login),
 
 
 
             ),
-
-            SizedBox(width: 30,),
-
-            _keyList(context, authstate, list),
-
+            ),
 
           ],
+
+
+
+        ) ,
+        floatingActionButton: !isMyProfile ? null : _floatingActionButton(),
+        key: scaffoldKey,
+        backgroundColor: Colors.white,
+        body: NestedScrollView(
+
+          headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+           return <Widget>[
+             authstate.isbusy
+                 ? _emptyBox()
+                 : SliverToBoxAdapter(
+               child: Container(
+                 color: Colors.white,
+                 child: authstate.isbusy
+                     ? SizedBox.shrink()
+                     : UserProfileWidget(
+                   user: authstate.profileUserModel,
+                   isMyProfile: isMyProfile,
+                 ),
+               ),
+             ),
+             Container(
+               child:  _keyList(context, authstate, list),
+
+             ),
+
+             Divider(
+               thickness: 10,
+               indent: 30,
+               endIndent: 30,),
+             Text('Footprint'),
+
+
+
+        ];
+
+        },
+
+        body:Container(
+          child: Text('바이오 리스트'),
+
+
+
+        ),
 
 
         ),
@@ -363,15 +448,6 @@ class UserProfileWidget extends StatelessWidget {
   final bool isMyProfile;
   final UserModel user;
 
-  String getBio(String bio) {
-    if(isMyProfile) {
-      return bio;
-    } else if ( bio == 'Edit profile to update bio') {
-      return 'no bio available';
-    }else {
-      return bio;
-    }
-  }
 
   String getSummary(String summary) {
     if(isMyProfile) {
@@ -410,33 +486,40 @@ class UserProfileWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
 
-        SizedBox(height: 10,),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
-          child: Text('${user.displayName}'
-          ),
+        Divider(
+          height: 20,
+          thickness: 3,
+          indent: 20,
+          endIndent: 60,
         ),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-        child: Text('${user.userName}'),
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: Row(
-            children: <Widget>[
-              SizedBox(
-                width: 20,
-                height: 20,
-              ),
-              _tapableText(context, '${user.getFollower()}',
-                  'Followers', 'FollowerListPage'),
-              SizedBox(width: 40,),
-              _tapableText(context, '${user.getFollowing()}',
-                  'Following', 'FollowingListPage'),
 
-            ],
-          ),
+        // Container(
+        //   alignment: Alignment.center,
+        //   child: Row(
+        //     children: <Widget>[
+        //       SizedBox(
+        //         width: 20,
+        //         height: 20,
+        //       ),
+        //       //_tapableText(context, '${user.getFollower()}',
+        //      //     'Followers', 'FollowerListPage'),
+        //       SizedBox(width: 40,),
+        //       _tapableText(context, '${user.getFollowing()}',
+        //           '스크랩', 'FollowingListPage'),
+        //
+        //     ],
+        //   ),
+        // ),
+
+        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Text('${user.major}'),
+        ),
+
+        Divider(
+          height: 20,
+          thickness: 3,
+          indent: 20,
+          endIndent: 60,
         ),
 
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
@@ -446,15 +529,8 @@ class UserProfileWidget extends StatelessWidget {
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
           child: Text('${user.interestList}'),
         ),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Text('${user.major}'),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Text(
-            getBio(user.bio),
-          ),
-        ),
+
+
 
       ],
 

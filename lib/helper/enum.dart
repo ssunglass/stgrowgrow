@@ -6,8 +6,6 @@ enum AuthStatus {
 
 enum SortUser {
   Verified,
-  Alphabetically,
-  Newest,
-  Oldest,
   MaxFollower,
+  major,
 }

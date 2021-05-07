@@ -1,4 +1,4 @@
-import 'package:stgrowgrow/model/user.dart';
+
 
 
 class KeyModel{
@@ -34,6 +34,7 @@ class KeyModel{
   toJson(){
     return{
 
+      'key' : key,
       'keyword' : keyword,
       "userId": userId,
 

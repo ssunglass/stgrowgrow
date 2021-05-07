@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/page/infrompage.dart';
-import 'package:stgrowgrow/page/profilepage.dart';
-import 'package:stgrowgrow/page/searchpage.dart';
+import 'file:///D:/Androidproject/stgrowgrow/lib/page/profile/profilepage.dart';
+import 'package:stgrowgrow/page/search/SearchPage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/model/user.dart';
@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> {
       state.setpageIndex = 0;
       initProfile();
       initKeyword();
+      initBio();
+
 
 
 
@@ -61,6 +63,14 @@ class _HomePageState extends State<HomePage> {
 
 
   }
+
+  void initBio() {
+    var state = Provider.of<AuthState>(context,listen: false);
+    state.BiodatabaseInit();
+    state.getBioDataFromDatabase();
+
+  }
+
 
   Widget _body() {
 

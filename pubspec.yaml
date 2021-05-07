@@ -43,6 +43,8 @@ dependencies:
 
   google_fonts: 1.1.2
   dropdownfield: ^1.0.3
+  filter_list: ^0.0.9
+
 
 
   http: 0.12.2

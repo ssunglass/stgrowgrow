@@ -56,7 +56,7 @@ class Utility {
       return '';
     }
     var dt = DateTime.parse(date).toLocal();
-    var dat = DateFormat.yMMMd().format(dt);
+    var dat = DateFormat.y().format(dt);
     return dat;
   }
 

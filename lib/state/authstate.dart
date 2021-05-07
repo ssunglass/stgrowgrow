@@ -7,10 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as Path;
 import 'package:stgrowgrow/helper/enum.dart';
 import 'package:stgrowgrow/helper/utility.dart';
+import 'package:stgrowgrow/model/bio.dart';
+import 'package:stgrowgrow/model/keyword.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'package:stgrowgrow/model/keyword.dart';
+
 import 'package:firebase_database/firebase_database.dart' as dabase;
 
 
@@ -28,9 +30,23 @@ class AuthState extends AppState{
 
   dabase.Query _profileQuery;
   dabase.Query _keyQuery;
+  dabase.Query _bioQuery;
 
   List<KeyModel> _keylist;
+  List<UserModel> _profileUserModelList;
+  List<BioModel> _biolist;
 
+  UserModel _userModel;
+
+  UserModel get userModel => _userModel;
+
+  UserModel get profileUserModel {
+    if(_profileUserModelList != null && _profileUserModelList.length > 0) {
+      return _profileUserModelList.last;
+    }else {
+      return null;
+    }
+  }
 
   List<KeyModel> get keylist {
     if(_keylist == null) {
@@ -40,6 +56,20 @@ class AuthState extends AppState{
     }
 
   }
+
+  List<BioModel> get bioist {
+    if(_biolist == null) {
+      return null;
+    } else {
+      return List.from(_biolist.reversed);
+    }
+
+
+
+  }
+
+
+
 
 
   Future<bool> KeydatabaseInit() {
@@ -57,8 +87,6 @@ class AuthState extends AppState{
       return Future.value(false);
     }
   }
-
-
 
   void getKeyDataFromDatabase(  ) {
 
@@ -87,7 +115,7 @@ class AuthState extends AppState{
       });
     } catch (error) {
       isBusy = false;
-      cprint(error, errorIn: 'getDataFromDatabase');
+      cprint(error, errorIn: 'getKeyDataFromDatabase');
     }
 
 
@@ -162,7 +190,7 @@ class AuthState extends AppState{
   }
 
 
-  _onKeywordRemoved(Event event) async {
+   _onKeywordRemoved(Event event) async {
     KeyModel keyword = KeyModel.fromJson(event.snapshot.value);
     keyword.key = event.snapshot.key;
 
@@ -176,7 +204,7 @@ class AuthState extends AppState{
       if(_keylist.length == 0) {
         _keylist = null;
       }
-      cprint('Keyword delted');
+      cprint('Keyword deleted');
 
     } catch (error) {
       cprint(error, errorIn: '_onKeywordRemoved');
@@ -187,19 +215,150 @@ class AuthState extends AppState{
   }
 
 
-  List<UserModel> _profileUserModelList;
+  Future<bool> BiodatabaseInit() {
 
-  UserModel _userModel;
+    try {
+      if (_bioQuery == null) {
+        _bioQuery = kDatabase.child('profile').child(user.uid).child('bio');
+        _bioQuery.onChildAdded.listen(_onBioAdded);
+        _bioQuery.onValue.listen(_onBioChanged);
+        _bioQuery.onChildRemoved.listen(_onBioRemoved);
+      }
 
-  UserModel get userModel => _userModel;
-
-  UserModel get profileUserModel {
-    if(_profileUserModelList != null && _profileUserModelList.length > 0) {
-      return _profileUserModelList.last;
-    }else {
-      return null;
+      return Future.value(true);
+    } catch (error) {
+      cprint(error, errorIn: 'databaseInit');
+      return Future.value(false);
     }
   }
+
+  void getBioDataFromDatabase(  ) {
+
+    try {
+      isBusy = true;
+      _biolist = null;
+      notifyListeners();
+      kDatabase.child('profile').child(user.uid).child('bio').once().then((DataSnapshot snapshot) {
+        _biolist = [];
+        if (snapshot.value != null) {
+          var map = snapshot.value;
+          if (map != null) {
+            map.forEach((key, value) {
+              var model = BioModel.fromJson(value);
+              model.key = key;
+              _biolist.add(model);
+
+            });
+
+          }
+        } else {
+          _biolist = null;
+        }
+        isBusy = false;
+        notifyListeners();
+      });
+    } catch (error) {
+      isBusy = false;
+      cprint(error, errorIn: 'getBioDataFromDatabase');
+    }
+
+
+
+
+  }
+
+
+   createBio(BioModel model) {
+    isBusy = true;
+    notifyListeners();
+    try {
+      kDatabase.child('profile').child(user.uid).child('bio').push().set(model.toJson());
+    } catch(error) {
+      cprint(error,errorIn: 'createBio');
+    }
+    isBusy = false;
+    notifyListeners();
+  }
+
+  deleteBio() {
+
+    try {
+      kDatabase.child('profile').child(user.uid).child('bio')
+          .remove()
+          .then((_) {
+        cprint('Bio deleted');
+      });
+    } catch (error) {
+      cprint(error,errorIn: 'deletedBio');
+    }
+  }
+
+  _onBioAdded(Event event) {
+    BioModel bio = BioModel.fromJson(event.snapshot.value);
+    bio.key = event.snapshot.key;
+
+
+    bio.key = event.snapshot.key;
+    if (_biolist == null) {
+      _biolist = [];
+    }
+    if (_biolist.length == 0 || _biolist.any((x) => x.key != bio.key)
+    ) {
+      _biolist.add(bio);
+      cprint('bio Added');
+    }
+    isBusy = false;
+    notifyListeners();
+  }
+
+  _onBioChanged(Event event) {
+    var model = BioModel.fromJson(event.snapshot.value);
+    model.key = event.snapshot.key;
+    if (_biolist.any((x) => x.key == model.key)) {
+      var oldEntry = _biolist.lastWhere((entry) {
+        return entry.key == event.snapshot.key;
+      });
+      _biolist[_biolist.indexOf(oldEntry)] = model;
+    }
+
+
+    if (event.snapshot != null) {
+      cprint('Bio updated');
+      isBusy = false;
+      notifyListeners();
+    }
+
+
+
+  }
+
+  _onBioRemoved(Event event) async {
+    BioModel bio = BioModel.fromJson(event.snapshot.value);
+    bio.key = event.snapshot.key;
+
+    try{
+      BioModel deletedKeyword;
+      if(_biolist.any((x) => x.key == bio.key)) {
+        deletedKeyword = _biolist.firstWhere((x) => x.key == bio.key);
+        _biolist.remove(deletedKeyword);
+      }
+
+      if(_biolist.length == 0) {
+        _biolist = null;
+      }
+      cprint('Bio deleted');
+
+    } catch (error) {
+      cprint(error, errorIn: '_onBioRemoved');
+    }
+
+
+
+  }
+
+
+
+
 
   void removeLastUser() {
     _profileUserModelList.removeLast();
@@ -381,20 +540,20 @@ class AuthState extends AppState{
 
   }
 
-  Future<void> updateUserProfile(UserModel userModel,
-      ) async {
-    try {
-        if (userModel != null) {
-          createUser(userModel);
-        } else {
-          createUser(_userModel);
-        }
+ // Future<void> updateUserProfile(UserModel userModel,
+ //     ) async {
+ //   try {
+ //       if (userModel != null) {
+ //         kDatabase.child('profile').child(user.uid).update(userModel.toJson());
+ //       } else {
+ //         kDatabase.child('profile').child(user.uid).update(_userModel.toJson());
+ //       }
 
-      Utility.logEvent('update_user');
-    } catch (error) {
-      cprint(error, errorIn: 'updateUserProfile');
-    }
-  }
+//      Utility.logEvent('update_user');
+ //   } catch (error) {
+ //     cprint(error, errorIn: 'updateUserProfile');
+ //  }
+ // }
 
 
 
@@ -412,6 +571,9 @@ class AuthState extends AppState{
 
 
   }
+
+
+
 
 
   followUser({bool removeFollower = false}) {

@@ -7,10 +7,11 @@ class UserModel{
   String nickName;
   String university;
 
-  String profilePic;
 
   String summary;
   String bio;
+
+  String keyword;
 
 
   bool isVerified;
@@ -32,6 +33,7 @@ class UserModel{
 
 
 
+
   UserModel({
   this.email,
   this.userId,
@@ -46,7 +48,7 @@ class UserModel{
     this.followers,
     this.following,
 
-    this.profilePic,
+
 
     this.createdAt,
   this.isVerified,
@@ -56,6 +58,9 @@ class UserModel{
 
     this.major,
     this.interestList,
+
+    this.keyword,
+
 
 
 
@@ -79,10 +84,12 @@ class UserModel{
     bio = map['bio'];
     university = map['university'];
 
-    profilePic = map['profilePic'];
+
 
     followers = map['followers'];
     following = map['following'];
+
+    keyword = map['keyword'];
 
 
 
@@ -132,7 +139,6 @@ class UserModel{
       'bio' : bio,
       'university' : university,
 
-      'profilePic' : profilePic,
 
       'createdAt': createdAt,
       'isVerified' : isVerified ?? false,
@@ -147,6 +153,10 @@ class UserModel{
       'followerList' : followerList,
       'followingList' : followingList,
 
+      'keyword' : keyword,
+
+
+
 
 
     };
@@ -155,31 +165,16 @@ class UserModel{
   }
 
   UserModel copyWith({
-  String email,
-  String userId,
-  String key,
-    String nickName,
-  String displayName,
+
   String userName,
 
-    String profilePic,
-    String university,
+
+
 
     String bio,
     String summary,
 
-    String createdAt,
-  String fcmToken,
 
-  bool isVerified,
-
-    int followers,
-    int following,
-
-    String major,
-
-    List<String> followingList,
-    List<String> interestList,
 
 
 
@@ -197,7 +192,6 @@ class UserModel{
       summary: summary ?? this.summary,
       bio: bio ?? this.bio,
 
-      profilePic: profilePic ?? this.profilePic,
       university: university ?? this.university,
 
 
@@ -216,6 +210,11 @@ class UserModel{
       major: major ?? this.major,
       interestList: interestList ?? this.interestList,
       followerList: followerList ?? this.followerList,
+
+      keyword: keyword ?? this.keyword,
+
+
+
 
 
 

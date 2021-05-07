@@ -7,9 +7,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/keyword.dart';
+import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/widgets/title_text.dart';
+import 'package:stgrowgrow/model/user.dart';
 
 
 class Keyword extends StatelessWidget{
@@ -25,13 +26,12 @@ class Keyword extends StatelessWidget{
 
 }) : super(key: key);
 
-
-
   void _deltedKeyword(BuildContext context) {
     var state = Provider.of<AuthState>(context, listen:false);
     state.deleteKeyword();
 
   }
+
 
 
   @override
@@ -53,9 +53,10 @@ class Keyword extends StatelessWidget{
 
                 ),
                 onDeleted: () {
-                 _deltedKeyword(context);
-                 
+                  _deltedKeyword(context);
+
                 },
+
 
               ),
 

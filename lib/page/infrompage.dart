@@ -29,6 +29,17 @@ class _InformPageState extends State<InformPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: Container(
+        child: Text('준비중', style: TextStyle(
+            fontSize: 50,
+            fontWeight: FontWeight.bold,
+            color: Colors.amberAccent,
+        ),
+        ),
+
+
+      ),
+
 
 
     );

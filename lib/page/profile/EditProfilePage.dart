@@ -62,24 +62,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
     var model = state.userModel.copyWith(
 
       userName: state.userModel.userName,
-      bio: state.userModel.bio,
+
       summary: state.userModel.summary,
 
 
 
     );
     if(_userName.text != null && _userName.text.isNotEmpty) {
-      model.userName = '@${_userName.text}';
+      model.userName = _userName.text;
 
-    }
-    if (_bio.text != null && _bio.text.isNotEmpty) {
-      model.bio = _bio.text;
     }
     if (_summary.text != null && _summary.text.isNotEmpty) {
       model.summary = _summary.text;
     }
 
-    state.updateUserProfile(model);
+    // state.updateUserProfile(model);
     Navigator.of(context).pop();
 
 

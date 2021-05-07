@@ -37,8 +37,10 @@ class _SignupState extends State<Signup>{
   TextEditingController _nicknameController;
   CustomLoader loader;
 
-  String _selectedItem = '인문';
-  List _options = ['인문','공학','사회','교육','자연','의약','예체능'];
+  String _selectedMajor = '인문';
+  String _selectedUniv='서울';
+  List _univOptions = ['서울','경기','강원','제주','대구/경북','충청','전북/전남'];
+  List _majorOptions = ['인문','공학','사회','교육','자연','의약','예체능'];
   List<String> interestList = [
     "코딩",
     "마케팅",
@@ -65,7 +67,7 @@ class _SignupState extends State<Signup>{
               },
             ),
             actions: <Widget>[
-              FlatButton(
+              ElevatedButton(
                 child: Text("선택"),
                 onPressed: () => Navigator.of(context).pop(),
               )
@@ -185,8 +187,10 @@ class _SignupState extends State<Signup>{
       summary: '한줄요약',
       bio: '바이오 적기',
       displayName: _nameController.text.trim(),
-      major: _selectedItem,
+      major: _selectedMajor,
       interestList: selectedinterestList,
+      university: _selectedUniv,
+
 
 
 
@@ -221,7 +225,7 @@ class _SignupState extends State<Signup>{
   }
 
 
- Widget _dropdownbutton(BuildContext context ) {
+ Widget _majorDropDown(BuildContext context ) {
     return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -229,8 +233,8 @@ class _SignupState extends State<Signup>{
           children: [
             Text('전공분야'),
             DropdownButton(
-                value: _selectedItem,
-                items: _options
+                value: _selectedMajor,
+                items: _majorOptions
                           .map(
                         (major) => DropdownMenuItem(
                           child: Text(major),
@@ -240,7 +244,7 @@ class _SignupState extends State<Signup>{
                 .toList(),
               onChanged: (value) {
                   setState(() {
-                    _selectedItem = value;
+                    _selectedMajor = value;
                   });
               },
             )
@@ -249,6 +253,35 @@ class _SignupState extends State<Signup>{
       );
 
  }
+
+  Widget _univDropDown(BuildContext context ) {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text('대학지역'),
+          DropdownButton(
+            value: _selectedUniv,
+            items: _univOptions
+                .map(
+                  (univ) => DropdownMenuItem(
+                child: Text(univ),
+                value: univ,
+              ),
+            )
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedUniv = value;
+              });
+            },
+          )
+        ],
+      ),
+    );
+
+  }
 
  Widget _choicechip(BuildContext context ) {
     return Container(
@@ -289,7 +322,8 @@ class _SignupState extends State<Signup>{
             _choicechip(context),
             _entryField('Enter email',
                 controller: _emailController, isEmail: true),
-            _dropdownbutton(context),
+            _majorDropDown(context),
+            _univDropDown(context),
             // _entryFeild('Mobile no',controller: _mobileController),
             _entryField('Enter password',
                 controller: _passwordController, isPassword: true),
