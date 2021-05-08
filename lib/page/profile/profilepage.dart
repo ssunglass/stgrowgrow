@@ -412,7 +412,26 @@ class _ProfilePageState extends State<ProfilePage>
                thickness: 10,
                indent: 30,
                endIndent: 30,),
-             Text('Footprint'),
+             Row(
+               children: <Widget>[
+                 Text('Footprint'),
+                 IconButton(
+                     icon: Icon(Icons.add),
+                     onPressed: () {
+                       showDialog(
+                         context: context,
+                         builder: (_) => AlertDialog(
+                           
+                         ),
+
+
+                       );
+                     },)
+
+
+               ],
+
+             ),
 
 
 
