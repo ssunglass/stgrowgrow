@@ -37,7 +37,9 @@ class AuthState extends AppState{
   List<BioModel> _biolist;
 
   UserModel _userModel;
+  BioModel _bioModel;
 
+  BioModel get bioModel => _bioModel;
   UserModel get userModel => _userModel;
 
   UserModel get profileUserModel {

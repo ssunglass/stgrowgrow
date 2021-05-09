@@ -17,10 +17,10 @@ import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/model/keyword.dart';
 import 'package:stgrowgrow/model/bio.dart';
-import 'package:stgrowgrow/widgets/biotile.dart';
+import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/biotile.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'package:stgrowgrow/widgets/keytile.dart';
+import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/keytile.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
 
 
@@ -38,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   TextEditingController _keyword;
   TextEditingController _bio;
+  TextEditingController _date;
 
   String date;
   bool isMyProfile = false;
@@ -51,6 +52,11 @@ class _ProfilePageState extends State<ProfilePage>
 
     _keyword = TextEditingController();
     _bio = TextEditingController();
+    _date = TextEditingController();
+    var state = Provider.of<AuthState>(context, listen: false);
+
+    _date.text = Utility.getdob(state?.bioModel?.date);
+
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -65,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage>
   void dispose() {
     _keyword.dispose();
     _bio.dispose();
+    _date.dispose();
     super.dispose();
 
   }
@@ -141,6 +148,7 @@ class _ProfilePageState extends State<ProfilePage>
     setState(() {
       if (picked != null) {
         date = picked.toString();
+        _date.text = Utility.getdob(date);
       }
     });
     
@@ -268,7 +276,7 @@ class _ProfilePageState extends State<ProfilePage>
     List<BioModel> list;
 
 
-    /// if [authState.isbusy] is true then an loading indicator will be displayed on screen.
+
     return authstate.isbusy
         ? Container(
       height: fullHeight(context) - 180,
@@ -279,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     )
 
-    /// if tweet list is empty or null then need to show user a message
+
         : list == null || list.length < 1
         ? Container(
       padding: EdgeInsets.only(top: 50, left: 30, right: 30),
@@ -290,53 +298,25 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     )
 
-    /// If tweets available then tweet list will displayed
         : ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 0),
       itemCount: list.length,
 
-      itemBuilder: (context, index) => Container(
-        color: Colors.white60,
-        child:  Bio()
+          itemBuilder: (context, index) => Container(
+           color: Colors.white60,
+           child:  Bio()
       ),
     );
   }
 
 
 
-  Widget _floatingActionButton() {
-    return FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _entry('keyword', controller: _keyword),
-                    GestureDetector(
-                      onTap: _keywordSubmitButton,
-                      child: Center(
-                        child: Text('등록'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            ),
 
 
-          );
-        },
-    child: Text('클릭'),
 
 
-    );
 
-  }
+
 
 
 
@@ -354,6 +334,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context);
     List<KeyModel> list;
+    List<BioModel> biolist;
     String id = widget.profileId ?? authstate.userId;
 
     if (authstate.keylist != null && authstate.keylist.length > 0) {
@@ -371,7 +352,9 @@ class _ProfilePageState extends State<ProfilePage>
             child: ListTile(
               title: Text('${authstate.userModel.displayName}',),
               subtitle: Text('${authstate.userModel.userName}'),
-              trailing: Icon(Icons.login),
+              trailing: IconButton(
+                icon: Icon(Icons.login),
+               ) ,
 
 
 
@@ -383,7 +366,6 @@ class _ProfilePageState extends State<ProfilePage>
 
 
         ) ,
-        floatingActionButton: !isMyProfile ? null : _floatingActionButton(),
         key: scaffoldKey,
         backgroundColor: Colors.white,
         body: NestedScrollView(
@@ -403,8 +385,37 @@ class _ProfilePageState extends State<ProfilePage>
                  ),
                ),
              ),
-             Container(
-               child:  _keyList(context, authstate, list),
+             Row(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: <Widget>[
+                 _keyList(context, authstate, list),
+                 IconButton(
+                     icon: Icon(Icons.add),
+                     onPressed: () {
+                       showDialog(
+                         context: context,
+                         builder: (_) => AlertDialog(
+                           content: SingleChildScrollView(
+                             child: Column(
+                               mainAxisSize: MainAxisSize.min,
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               children: <Widget>[
+                                 _entry('keyword', controller: _keyword),
+                                 GestureDetector(
+                                   onTap: _keywordSubmitButton,
+                                   child: Center(
+                                     child: Text('등록'),
+                                   ),
+                                 ),
+                               ],
+                             ),
+                           ),
+                         ),
+                       );
+                     },
+                 ),
+               ],
+
 
              ),
 
@@ -421,6 +432,36 @@ class _ProfilePageState extends State<ProfilePage>
                        showDialog(
                          context: context,
                          builder: (_) => AlertDialog(
+                           content: SingleChildScrollView(
+                             child: Column(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: <Widget>[
+                                 InkWell(
+                                   onTap: showYear,
+                                   child: _entry('Year',isenable: false,controller: _date),
+
+
+                                 ),
+                                 _entry('Bio',controller: _bio,maxLine: null),
+                                 GestureDetector(
+                                   onTap: _bioSubmitButton,
+                                   child: Center(
+                                     child: Text('추가'),
+                                   ),
+                                 ),
+
+
+
+
+
+                               ],
+
+
+
+                             ),
+
+
+                           ),
                            
                          ),
 
@@ -440,7 +481,7 @@ class _ProfilePageState extends State<ProfilePage>
         },
 
         body:Container(
-          child: Text('바이오 리스트'),
+          child: _bioList(context, authstate, biolist),
 
 
 
