@@ -14,6 +14,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stgrowgrow/state/authstate.dart';
+import 'package:provider/provider.dart';
 
 class InformPage extends StatefulWidget {
   InformPage({Key key,this.scaffoldKey}) : super(key: key);
@@ -27,11 +29,13 @@ class InformPage extends StatefulWidget {
 class _InformPageState extends State<InformPage> {
 
 
-  SliverAppBar sliverAppbar(){
+
+  SliverAppBar getsliverAppbar(){
+
+    final state = Provider.of<AuthState>(context);
+
     return SliverAppBar(
       expandedHeight: 150,
-      floating: true,
-      pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: InkWell(
           onTap: () {
@@ -53,18 +57,32 @@ class _InformPageState extends State<InformPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
 
+                      Text( state.userModel.displayName,)
+
+
                     ],
 
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Text(state.userModel.userName),
 
                     ],
                   ),
                   Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
+
+                      Text('내 커리어 바로가기'),
+
+                      Divider(thickness: 1,indent: 1, endIndent: 1,),
+
+                      SizedBox(width: 3,height: 3,),
+
+                      Divider(thickness: 5,indent: 5, endIndent: 5,),
+
+
 
                     ],
 
@@ -108,7 +126,29 @@ class _InformPageState extends State<InformPage> {
     return Scaffold(
       body: CustomScrollView(
         slivers:  [
-          sliverAppbar(),
+          getsliverAppbar(),
+
+
+          SliverAppBar(
+            floating: true,
+            centerTitle: true,
+            title: Text('다른 사람들은 지금을 \n어떻게 보내고 있을까?'),
+
+
+
+
+          ),
+          SliverList(
+
+
+
+
+
+
+
+          ),
+
+
 
         ],
 
