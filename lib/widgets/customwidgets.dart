@@ -25,7 +25,6 @@ Widget customIcon(
 }
 
 double fullWidth(BuildContext context) {
-  // cprint(MediaQuery.of(context).size.width.toString());
   return MediaQuery.of(context).size.width;
 }
 
