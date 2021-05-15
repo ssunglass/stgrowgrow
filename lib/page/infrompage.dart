@@ -17,6 +17,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stgrowgrow/page/userListWidget.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/searchstate.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,7 @@ import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class InformPage extends StatelessWidget {
   InformPage({Key key,this.scaffoldKey,this.refreshIndicatorKey}) : super(key: key);
@@ -192,6 +194,7 @@ class _InFormBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context, listen:false);
+    String myId = authstate.userModel.key;
     List<UserModel> userList;
     final _random = new Random();
     return Consumer<SearchState>(
@@ -223,29 +226,29 @@ class _InFormBody extends StatelessWidget {
 
                 ),
 
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                          (context,index) =>
-                              Container(
+                SliverStaggeredGrid.extentBuilder(
+                  itemBuilder: (context, index) =>
+                      Container(
+                        child: UserTile(
+                          user: userList[index],
+                          myId: myId,
+                        ),
 
-
-
-
-                      ),
-
-                      childCount: _random.nextInt(userList.length)
-
-                  )
-
-
-                ),
-
+                      ) ,
+                  itemCount: _random.nextInt(userList.length),
+                  maxCrossAxisExtent: 4 ,
+                  staggeredTileBuilder: (int index) =>
+                    StaggeredTile.count(2, index.isEven ? 2 : 1),
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                     )
 
 
 
 
 
             ],
+
 
 
 

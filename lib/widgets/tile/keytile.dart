@@ -15,16 +15,20 @@ import 'package:stgrowgrow/model/user.dart';
 
 class Keyword extends StatelessWidget{
   final KeyModel model;
-  final bool isDisplayOnProfile;
   final GlobalKey<ScaffoldMessengerState> scaffoldKey;
+  final bool isDisplayOnProfile ;
 
-  const Keyword({
+
+
+   const Keyword({
     Key key,
     this.model,
-    this.isDisplayOnProfile = false,
     this.scaffoldKey,
+     this.isDisplayOnProfile = false,
 
 }) : super(key: key);
+
+
 
   void _deltedKeyword(BuildContext context) {
     var state = Provider.of<AuthState>(context, listen:false);
@@ -45,8 +49,7 @@ class Keyword extends StatelessWidget{
             Container(
               child:InputChip(
                label: Text(model.keyword),
-                labelStyle: TextStyle(color: Colors.black),
-                backgroundColor: Colors.blueAccent,
+                labelStyle: TextStyle(color: Colors.white),
                 deleteIcon: Icon(
                   Icons.delete,
                   color: Colors.white,

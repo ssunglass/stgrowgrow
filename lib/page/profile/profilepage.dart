@@ -6,7 +6,7 @@
 
 
 
-
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage>
   String date;
   bool isMyProfile = false;
   int pageIndex = 0;
+
   final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey<
       ScaffoldMessengerState>();
 
@@ -132,6 +133,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
+
     Navigator.of(context).pop();
 
   }
@@ -204,6 +206,8 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
+
+
   Widget _keyList(BuildContext context, AuthState authstate,
       List<KeyModel> keyList ) {
     List<KeyModel> list;
@@ -255,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage>
            ),
 
            itemBuilder: (context, index) => Container(
-             color: Colors.white60,
+             color: Colors.white,
              child: Keyword(
                 model: list[index],
                 isDisplayOnProfile: true,
@@ -274,6 +278,15 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _bioList(BuildContext context, AuthState authstate,
       List<BioModel> bioList, ) {
     List<BioModel> list;
+
+
+    if (bioList == null) {
+
+    } else {
+
+      list = bioList.toList();
+
+    }
 
 
 
