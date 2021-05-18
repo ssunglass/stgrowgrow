@@ -361,17 +361,23 @@ class _ProfilePageState extends State<ProfilePage>
       child: Scaffold(
         appBar: AppBar(
           actions: <Widget>[
-            Expanded(
-            child: ListTile(
-              title: Text('${authstate.userModel.displayName}',),
-              subtitle: Text('${authstate.userModel.userName}'),
-              trailing: IconButton(
-                icon: Icon(Icons.login),
-               ) ,
+            Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text('${authstate.userModel.displayName}',),
+                  subtitle: Text('${authstate.userModel.userName}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.login),
+                  ) ,
+                ),
+
+
+              ],
 
 
 
-            ),
+
+
             ),
 
           ],

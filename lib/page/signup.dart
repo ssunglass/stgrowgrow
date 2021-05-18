@@ -37,10 +37,10 @@ class _SignupState extends State<Signup>{
   TextEditingController _nicknameController;
   CustomLoader loader;
 
-  String _selectedMajor = '인문';
+  String _selectedDepartment = '인문';
   String _selectedUniv='서울';
   List _univOptions = ['서울','경기','강원','제주','대구/경북','충청','전북/전남'];
-  List _majorOptions = ['인문','공학','사회','교육','자연','의약','예체능'];
+  List _departmentOptions = ['인문','공학','사회','교육','자연','의약','예체능'];
   List<String> interestList = [
     "코딩",
     "마케팅",
@@ -187,7 +187,7 @@ class _SignupState extends State<Signup>{
       summary: '한줄요약',
       bio: '바이오 적기',
       displayName: _nameController.text.trim(),
-      major: _selectedMajor,
+      department: _selectedDepartment,
       interestList: selectedinterestList,
       university: _selectedUniv,
 
@@ -225,7 +225,7 @@ class _SignupState extends State<Signup>{
   }
 
 
- Widget _majorDropDown(BuildContext context ) {
+ Widget _departmentDropDown(BuildContext context ) {
     return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -233,18 +233,18 @@ class _SignupState extends State<Signup>{
           children: [
             Text('전공분야'),
             DropdownButton(
-                value: _selectedMajor,
-                items: _majorOptions
+                value: _selectedDepartment,
+                items: _departmentOptions
                           .map(
-                        (major) => DropdownMenuItem(
-                          child: Text(major),
-                          value: major,
+                        (department) => DropdownMenuItem(
+                          child: Text(department),
+                          value: department,
                         ),
                 )
                 .toList(),
               onChanged: (value) {
                   setState(() {
-                    _selectedMajor = value;
+                    _selectedDepartment = value;
                   });
               },
             )
@@ -322,7 +322,7 @@ class _SignupState extends State<Signup>{
             _choicechip(context),
             _entryField('Enter email',
                 controller: _emailController, isEmail: true),
-            _majorDropDown(context),
+            _departmentDropDown(context),
             _univDropDown(context),
             // _entryFeild('Mobile no',controller: _mobileController),
             _entryField('Enter password',

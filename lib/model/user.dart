@@ -7,6 +7,8 @@ class UserModel{
   String nickName;
   String university;
 
+  String department;
+
 
   String summary;
   String bio;
@@ -45,6 +47,7 @@ class UserModel{
     this.bio,
     this.university,
 
+
     this.followers,
     this.following,
 
@@ -56,6 +59,7 @@ class UserModel{
 
     this.followerList,
 
+    this.department,
     this.major,
     this.interestList,
 
@@ -98,6 +102,7 @@ class UserModel{
     isVerified = map['isVerified'] ?? false;
 
     major = map['major'];
+    department = map['department'];
 
     if(map['interestList'] != null) {
       interestList = [];
@@ -154,6 +159,7 @@ class UserModel{
       'followingList' : followingList,
 
       'keyword' : keyword,
+      'department' : department,
 
 
 
@@ -207,6 +213,7 @@ class UserModel{
       userId: userId ?? this.userId,
       fcmToken: fcmToken ?? this.fcmToken,
 
+      department: department ?? this.department,
       major: major ?? this.major,
       interestList: interestList ?? this.interestList,
       followerList: followerList ?? this.followerList,
