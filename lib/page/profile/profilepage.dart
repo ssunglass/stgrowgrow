@@ -222,9 +222,9 @@ class _ProfilePageState extends State<ProfilePage>
 
     return authstate.isbusy
         ? Container(
-         height: fullHeight(context) - 180,
+         height: 100,
          child: CustomScreenLoader(
-            height: double.infinity,
+            height: 100,
            width: fullWidth(context),
            backgroundColor: Colors.white,
       ),
@@ -293,19 +293,19 @@ class _ProfilePageState extends State<ProfilePage>
     return authstate.isbusy
         ? Container(
       height: fullHeight(context) - 180,
-      child: CustomScreenLoader(
-        height: double.infinity,
-        width: fullWidth(context),
-        backgroundColor: Colors.white,
+           child: CustomScreenLoader(
+            height: double.infinity,
+           width: fullWidth(context),
+          backgroundColor: Colors.white,
       ),
     )
 
 
         : list == null || list.length < 1
         ? Container(
-      padding: EdgeInsets.only(top: 50, left: 30, right: 30),
-      child: NotifyText(
-        title: isMyProfile
+          padding: EdgeInsets.only(top: 50, left: 30, right: 30),
+         child: NotifyText(
+           title: isMyProfile
             ? '바이오를 등록해주세요'
             : '${authstate.profileUserModel.userName} 바이오를 등록 해주세요' ,
       ),
@@ -394,9 +394,9 @@ class _ProfilePageState extends State<ProfilePage>
              authstate.isbusy
                  ? _emptyBox()
                  : SliverToBoxAdapter(
-               child: Container(
-                 color: Colors.white,
-                 child: authstate.isbusy
+                   child: Container(
+                   color: Colors.white,
+                   child: authstate.isbusy
                      ? SizedBox.shrink()
                      : UserProfileWidget(
                    user: authstate.profileUserModel,
@@ -590,8 +590,9 @@ class UserProfileWidget extends StatelessWidget {
         //   ),
         // ),
 
+
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Text('${user.major}'),
+          child: Text('${user.department}'),
         ),
 
         Divider(

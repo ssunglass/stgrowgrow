@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/routes.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/state/authstate.dart';
+import 'package:stgrowgrow/state/searchstate.dart';
 
 void main() async{
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<AppState>(create: (_) => AppState()),
         ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
+        ChangeNotifierProvider<SearchState>(create: (_) => SearchState()),
 
       ],
       child: MaterialApp(

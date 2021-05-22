@@ -1,19 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +9,7 @@ import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
 
 class InformPage extends StatelessWidget {
   InformPage({Key key,this.scaffoldKey,this.refreshIndicatorKey}) : super(key: key);
@@ -55,7 +39,10 @@ class InformPage extends StatelessWidget {
 
             },
 
-            child: _InFormBody(),
+            child: _InFormBody(
+              refreshIndicatorKey: refreshIndicatorKey,
+              scaffoldKey: scaffoldKey,
+            ),
 
 
 
@@ -127,30 +114,18 @@ class _InFormBody extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
 
-                            Text( state.userModel.displayName,)
-
-
-                          ],
-
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
+                            Text( state.userModel.displayName,),
                             Text(state.userModel.userName),
 
+
                           ],
+
                         ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
 
                             Text('내 커리어 바로가기'),
-
-                            Divider(thickness: 1,indent: 1, endIndent: 1,),
-
-                            SizedBox(width: 3,height: 3,),
-
-                            Divider(thickness: 5,indent: 5, endIndent: 5,),
 
 
 
@@ -165,6 +140,12 @@ class _InFormBody extends StatelessWidget {
                     ),
                   ),
 
+                  Divider(thickness: 1,indent: 1, endIndent: 1,),
+
+                  SizedBox(width: 3,height: 3,),
+
+                  Divider(thickness: 5,indent: 5, endIndent: 5,),
+
 
                 ],
 
@@ -173,11 +154,7 @@ class _InFormBody extends StatelessWidget {
             ),
 
           ),
-
-
         ),
-
-
 
 
 
@@ -191,87 +168,49 @@ class _InFormBody extends StatelessWidget {
 
 
 
+
+
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context, listen:false);
-    String myId = authstate.userModel.key;
     List<UserModel> userList;
-    final _random = new Random();
     return Consumer<SearchState>(
-        builder: (context, state,child) {
+      builder: (context,state,child) {
+        if(userIdsList != null && userIdsList.isNotEmpty) {
+          userList = state.getuserDetail(userIdsList);
+        }
+        return CustomScrollView(
+          slivers: <Widget>[
+            child,
+            userList == null
+                ? SliverToBoxAdapter(
+                   child: EmptyList(
+                    '아직 등록된 유저가 없습니다',
 
-          if(userIdsList != null && userIdsList.isNotEmpty) {
-            userList = state.getuserDetail(userIdsList);
-          }
-
-          return !(userList != null && userList.isNotEmpty)
-              ? Container(
-               width: fullWidth(context),
-                padding: EdgeInsets.only(top: 0, left: 30, right: 30),
-                child: Text('Empty')
-          )
-
-             : CustomScrollView(
-              slivers: <Widget>[
-
-                child,
-
-                SliverAppBar(
-                  floating: true,
-                  centerTitle: true,
-                  title: Text('다른 사람들은 지금을 \n어떻게 보내고 있을까?'),
+                 ),
 
 
+              )
+            : UserListWidget(
+               list: userList,
+
+             )
 
 
-                ),
-
-                SliverStaggeredGrid.extentBuilder(
-                  itemBuilder: (context, index) =>
-                      Container(
-                        child: UserTile(
-                          user: userList[index],
-                          myId: myId,
-                        ),
-
-                      ) ,
-                  itemCount: _random.nextInt(userList.length),
-                  maxCrossAxisExtent: 4 ,
-                  staggeredTileBuilder: (int index) =>
-                    StaggeredTile.count(2, index.isEven ? 2 : 1),
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                     )
-
-
-
-
-
-            ],
-
-
-
-
-
-
-          );
-
-
-
-
-
-
-
-
-
-        },
-
-
-
-          child: getsliverAppbar(context),
+          ],
 
 
         );
+
+
+      },
+
+      child: getsliverAppbar(context),
+
+
+    );
+
+
 
 
   }

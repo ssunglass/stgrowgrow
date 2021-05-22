@@ -54,8 +54,6 @@ class UserListPage extends StatelessWidget {
           )
               : UserListWidget(
             list: userList,
-            emptyScreenText: emptyScreenText,
-            emptyScreenSubTitleText: emptyScreenSubTileText,
 
           );
 

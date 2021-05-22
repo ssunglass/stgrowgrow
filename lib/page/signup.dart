@@ -308,7 +308,7 @@ class _SignupState extends State<Signup>{
   
   Widget _body(BuildContext context) {
     return Container(
-      height: fullHeight(context) - 88,
+      height: fullHeight(context) ,
       padding: EdgeInsets.symmetric(horizontal: 30),
       child: Form(
         key: _formKey,
