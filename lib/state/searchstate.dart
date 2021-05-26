@@ -13,8 +13,12 @@ class SearchState extends AppState {
   bool isBusy = false;
 
 
+
+
   List<KeyModel> _keylist;
   List<KeyModel> _keyFilterlist;
+
+
   List<UserModel> _userlist;
 
   List<KeyModel> keyList = [];
@@ -45,7 +49,48 @@ class SearchState extends AppState {
   }
 
 
-  void getDataFromDatabase() {
+  void getUserDataFromDatabase() {
+    try {
+      isBusy = true;
+      kDatabase.child('profile').once().then(
+              (DataSnapshot snapshot) {
+                _userlist = [];
+                if(snapshot.value != null) {
+                  var map = snapshot.value;
+                  if(map != null) {
+                    map.forEach((key,value) {
+                      var model = UserModel.fromJson(value);
+                      model.key = key;
+                      _userlist.add(model);
+                    });
+
+                  }
+
+                } else {
+                  _userlist = null;
+
+
+                }
+                isBusy = false;
+
+
+
+              },
+      );
+    } catch (error) {
+      isBusy = false;
+      cprint(error, errorIn: 'getUserDataFromDatabase');
+
+    }
+  }
+
+
+
+
+
+
+
+  void getKeyDataFromDatabase() {
     try {
       isBusy = true;
       kDatabase.child('profile').once().then(
@@ -73,7 +118,7 @@ class SearchState extends AppState {
       );
     } catch (error) {
       isBusy = false;
-      cprint(error, errorIn: 'getDataFromDatabase');
+      cprint(error, errorIn: 'getKeyDataFromDatabase');
     }
   }
 
@@ -116,14 +161,8 @@ class SearchState extends AppState {
   }
 
   List<UserModel> userList = [];
-  List<UserModel> getuserDetail(List<String> userIds) {
-    final list = _userlist.where((x) {
-      if (userIds.contains(x.key)) {
-        return true;
-      } else {
-        return false;
-      }
-    }).toList();
+  List<UserModel> getuserDetail() {
+    final list = _userlist.toList();
     return list;
   }
 

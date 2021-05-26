@@ -42,7 +42,7 @@ class UserListPage extends StatelessWidget {
       body:  Consumer<SearchState>(
         builder: (context, state, child) {
           if(userIdsList != null && userIdsList.isNotEmpty) {
-            userList = state.getuserDetail(userIdsList);
+            userList = state.getuserDetail();
           }
           return !(userList != null && userList.isNotEmpty)
               ? Container(

@@ -5,6 +5,7 @@
 
 
 
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,34 +45,54 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final state = Provider.of<SearchState>(context);
-    // final userlist = state.userlist;
-    // final keylist = state.keyList;
-    // return Scaffold(
-    //   appBar: TextField(
-    //     scaffoldKey: widget.scaffoldKey,
-    //     icon: AppIcon.settings,
-    //     onSearchChanged: (text) {
-    //       state.filterBy(text,text);
-    //     },
-    //   ),
-    //   body: RefreshIndicator(
-    //     onRefresh: () async {
-    //       state.getDataFromDatabase();
-    //       return Future.value(true);
-    //     },
-    //     child: ListView.separated(
-    //    addAutomaticKeepAlives: false,
-    //    physics: BouncingScrollPhysics(),
-    //    itemBuilder: (context, index) => _UserTile(user: userlist[index], keyword: keylist[index],),
-    //   separatorBuilder: (_, index) => Divider(
-    //   height: 0,
-    // ),
-    // itemCount: userlist?.length ?? 0,
-    // ),
-    //
-    //   ),
-    // );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          '검색',
+          style: const TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.w500),
+        ),
+
+      ),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Text('키워드 검색'),
+            ),
+
+
+
+            Divider(
+              thickness: 2,
+              indent: 2,
+              endIndent: 2,
+            ),
+
+
+
+
+          ],
+
+
+
+
+        ),
+
+
+
+
+
+
+      ),
+
+
+
+    );
+
 
 
 
@@ -83,41 +104,3 @@ class _SearchPageState extends State<SearchPage> {
 
 }
 
-//  class _UserTile extends StatelessWidget {
-//   const _UserTile({Key key, this.user, this.keyword}) : super(key: key);
-//   final UserModel user;
-//   final KeyModel keyword;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListTile(
-//       onTap: () {
-//         kAnalytics.logViewSearchResults(searchTerm: user.userName );
-//         Navigator.of(context).pushNamed('/ProfilePage/' + user?.userId);
-//       },
-//       title: Row(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: <Widget>[
-//           Flexible(
-//             child: TitleText(user.displayName,
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.w800,
-//                 overflow: TextOverflow.ellipsis),
-//           ),
-//           SizedBox(width: 3),
-//           user.isVerified
-//               ? customIcon(
-//             context,
-//             icon: AppIcon.blueTick,
-//             istwitterIcon: true,
-//             iconColor: AppColor.primary,
-//             size: 13,
-//             paddingIcon: 3,
-//           )
-//               : SizedBox(width: 0),
-//         ],
-//       ),
-//       subtitle: Text(user.userName),
-//     );
-//   }
-// }

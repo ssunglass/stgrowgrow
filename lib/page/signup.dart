@@ -35,6 +35,7 @@ class _SignupState extends State<Signup>{
   TextEditingController _passwordController;
   TextEditingController _confirmController;
   TextEditingController _nicknameController;
+  TextEditingController _majorController;
   CustomLoader loader;
 
   String _selectedDepartment = '인문';
@@ -86,6 +87,7 @@ class _SignupState extends State<Signup>{
     _passwordController = TextEditingController();
     _confirmController = TextEditingController();
     _nicknameController = TextEditingController();
+    _majorController = TextEditingController();
     super.initState();
 
 
@@ -97,6 +99,7 @@ class _SignupState extends State<Signup>{
     _nameController.dispose();
     _confirmController.dispose();
     _nicknameController.dispose();
+    _majorController.dispose();
     super.dispose();
   }
 
@@ -161,6 +164,10 @@ class _SignupState extends State<Signup>{
       customSnackBar(_scaffoldKey, '이름이 너무 깁니다');
       return;
     }
+    if(_majorController.text.isEmpty){
+      customSnackBar(_scaffoldKey, '세부 전공을 입력해주세요');
+      return;
+    }
     if (_emailController.text == null ||
         _emailController.text.isEmpty ||
         _passwordController.text == null ||
@@ -185,11 +192,12 @@ class _SignupState extends State<Signup>{
       email: _emailController.text.trim().toLowerCase(),
       nickName: _nicknameController.text.trim(),
       summary: '한줄요약',
-      bio: '바이오 적기',
       displayName: _nameController.text.trim(),
       department: _selectedDepartment,
+      major: _majorController.text.trim(),
       interestList: selectedinterestList,
       university: _selectedUniv,
+
 
 
 
@@ -323,6 +331,7 @@ class _SignupState extends State<Signup>{
             _entryField('Enter email',
                 controller: _emailController, isEmail: true),
             _departmentDropDown(context),
+            _entryField('세부전공 ps.xx학과이면 xx만 적어주세요', controller: _majorController),
             _univDropDown(context),
             // _entryFeild('Mobile no',controller: _mobileController),
             _entryField('Enter password',

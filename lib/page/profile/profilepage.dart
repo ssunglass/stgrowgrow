@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -593,6 +585,10 @@ class UserProfileWidget extends StatelessWidget {
 
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
           child: Text('${user.department}'),
+        ),
+
+        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Text('${user.major}'),
         ),
 
         Divider(

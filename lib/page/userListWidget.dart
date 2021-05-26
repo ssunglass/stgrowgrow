@@ -27,7 +27,7 @@ class UserListWidget extends StatelessWidget {
     var state = Provider.of<AuthState>(context, listen: false);
     final _random = new Random();
     String myId = state.userModel.key;
-    return SliverStaggeredGrid.extentBuilder(
+    return SliverStaggeredGrid.countBuilder(
       itemBuilder: (context, index) =>
           Container(
             child: UserTile(
@@ -37,7 +37,7 @@ class UserListWidget extends StatelessWidget {
 
           ) ,
       itemCount: _random.nextInt(list.length),
-      maxCrossAxisExtent: 4 ,
+      crossAxisCount: 2,
       staggeredTileBuilder: (int index) =>
           StaggeredTile.count(2, index.isEven ? 2 : 1),
       crossAxisSpacing: 5,
@@ -96,13 +96,6 @@ class UserTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,),
                       ),
                       SizedBox(width: 5,),
-                      user.isVerified
-                          ? customIcon(
-                        context,
-                        icon: Icons.wifi_rounded,
-                        size: 15,
-                        paddingIcon: 5,)
-                          : SizedBox(width: 0,),
                     ],
                   ),
 

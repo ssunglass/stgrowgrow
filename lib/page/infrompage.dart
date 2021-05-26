@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:stgrowgrow/page/profile/profilepage.dart';
 import 'package:stgrowgrow/page/userListWidget.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/searchstate.dart';
@@ -9,22 +11,21 @@ import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 
 class InformPage extends StatelessWidget {
-  InformPage({Key key,this.scaffoldKey,this.refreshIndicatorKey}) : super(key: key);
+  const InformPage({Key key,this.scaffoldKey,this.refreshIndicatorKey}) : super(key: key);
 
 
   final GlobalKey<ScaffoldMessengerState> scaffoldKey;
+
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
 
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -33,47 +34,23 @@ class InformPage extends StatelessWidget {
           child: RefreshIndicator(
             key: refreshIndicatorKey,
             onRefresh: () async {
-              var authState = Provider.of<AuthState>(context, listen: false);
-              authState.getProfileUser();
+              var searchState = Provider.of<SearchState>(context,listen: false);
+              searchState.getUserDataFromDatabase();
               return Future.value(true);
-
             },
-
             child: _InFormBody(
               refreshIndicatorKey: refreshIndicatorKey,
               scaffoldKey: scaffoldKey,
             ),
 
-
-
-
-
-
-
           ),
-
-
-
-
-
-
-
-
 
         ),
 
-
-
-
       ),
-
     );
 
-
-
   }
-
-
 }
 
 class _InFormBody extends StatelessWidget {
@@ -87,85 +64,6 @@ class _InFormBody extends StatelessWidget {
     this.userIdsList}) : super(key: key);
 
 
-  SliverAppBar getsliverAppbar(BuildContext context){
-
-    final state = Provider.of<AuthState>(context);
-
-    return SliverAppBar(
-      expandedHeight: 150,
-      flexibleSpace: FlexibleSpaceBar(
-        background: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed('ProfilePage');
-          },
-          child: Container(
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            height: 180,
-            width: double.maxFinite,
-            child: Card(
-              elevation: 5,
-              child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 5),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-
-                            Text( state.userModel.displayName,),
-                            Text(state.userModel.userName),
-
-
-                          ],
-
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-
-                            Text('내 커리어 바로가기'),
-
-
-
-                          ],
-
-                        ),
-
-                      ],
-
-
-
-                    ),
-                  ),
-
-                  Divider(thickness: 1,indent: 1, endIndent: 1,),
-
-                  SizedBox(width: 3,height: 3,),
-
-                  Divider(thickness: 5,indent: 5, endIndent: 5,),
-
-
-                ],
-
-              ),
-
-            ),
-
-          ),
-        ),
-
-
-
-      ),
-
-
-    );
-
-
-  }
-
 
 
 
@@ -173,31 +71,82 @@ class _InFormBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context, listen:false);
-    List<UserModel> userList;
     return Consumer<SearchState>(
       builder: (context,state,child) {
-        if(userIdsList != null && userIdsList.isNotEmpty) {
-          userList = state.getuserDetail(userIdsList);
-        }
+        final List<UserModel> list = state.getuserDetail();
+
         return CustomScrollView(
           slivers: <Widget>[
             child,
-            userList == null
-                ? SliverToBoxAdapter(
-                   child: EmptyList(
-                    '아직 등록된 유저가 없습니다',
 
-                 ),
+            Divider(
+              thickness: 3,
+              endIndent: 3,
+              indent: 3,
+
+            ),
+
+            SizedBox(height: 20,),
+
+            Divider(
+              thickness: 15,
+              endIndent: 15,
+              indent: 15,
+
+            ),
+
+            SizedBox(height: 5,),
+
+            SliverStickyHeader(
+              header: Container(
+                height: 100,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                alignment: Alignment.center,
+                child: Text(
+                  '다른 사람들은 지금을 \n어떻게 보내고 있을까?',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 30,
+
+                  ),
+
+                ),
+
+              ),
+
+            ),
+            state.isBusy && list == null
+             ? SliverToBoxAdapter(
+                 child: Container(
+                   height: fullHeight(context) -135,
+                   child: CustomScreenLoader(
+                     height: double.infinity,
+                     width: fullWidth(context),
+                     backgroundColor: Colors.black45,
+
+                   ),
 
 
-              )
-            : UserListWidget(
-               list: userList,
-
-             )
+                 ) ,
 
 
-          ],
+            )
+            : !state.isBusy && list ==null
+               ? SliverToBoxAdapter(
+                  child: EmptyList(
+                    'No User have enjoyed'
+
+                  ),
+
+
+
+            )
+
+               : UserListWidget(
+                   list: list,
+                ),
+
+        ],
 
 
         );
@@ -205,7 +154,57 @@ class _InFormBody extends StatelessWidget {
 
       },
 
-      child: getsliverAppbar(context),
+      child: Card(
+        margin: EdgeInsets.fromLTRB(30, 30, 30, 30),
+        color: Colors.white70,
+        child: InkWell(
+           onTap: () {
+             Navigator.push(
+               context,
+               MaterialPageRoute(
+                 builder: (context) => ProfilePage(),
+               ),
+             );
+
+
+           },
+
+            child: Column(
+             children: <Widget>[
+              Text(
+                authstate.profileUserModel.displayName,
+                style: const TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold
+
+                ) ,
+              ),
+
+              Text(
+                  authstate.profileUserModel.userName,
+                style: const TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+               Padding(
+                 padding: EdgeInsets.symmetric(),
+                 child: Text('내 커리어 바로가기',
+                             style: const TextStyle(
+                               color: Colors.black38,
+                             ),
+                 ),
+             ),
+
+          ],
+
+
+
+        ),
+
+        ),
+
+
+      ),
 
 
     );
