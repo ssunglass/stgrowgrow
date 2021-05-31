@@ -1,6 +1,6 @@
 # stgrowgrow
 
-A new Flutter application.
+비전공자, 코딩 입문 뉴비의 첫 청년, 대학생 타겟 Flutter 커리어 어플 만들기
 
 ## Getting Started
 
