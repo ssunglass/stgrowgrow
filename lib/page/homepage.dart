@@ -6,6 +6,7 @@ import 'file:///D:/Androidproject/stgrowgrow/lib/page/profile/profilepage.dart';
 import 'package:stgrowgrow/page/search/SearchPage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/appstate.dart';
+import 'package:stgrowgrow/state/searchstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/bottomMenuBar/bottomMenuBar.dart';
 
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
       initProfile();
       initKeyword();
       initBio();
+      initSearch();
 
 
 
@@ -71,6 +73,13 @@ class _HomePageState extends State<HomePage> {
 
   }
 
+  void initSearch() {
+    var searchState = Provider.of<SearchState>(context,listen: false);
+    searchState.getKeyDataFromDatabase();
+    searchState.getUserDataFromDatabase();
+
+  }
+
 
   Widget _body() {
 
@@ -88,6 +97,7 @@ class _HomePageState extends State<HomePage> {
       case 0 :
         return InformPage(
          scaffoldKey: _scaffoldKey,
+          refreshIndicatorKey: refreshIndicatorKey,
         );
         break;
       case 1 :
@@ -97,7 +107,8 @@ class _HomePageState extends State<HomePage> {
         return ProfilePage();
         break;
       default:
-        return InformPage(scaffoldKey: _scaffoldKey);
+        return InformPage(
+            scaffoldKey: _scaffoldKey);
         break;
     }
   }

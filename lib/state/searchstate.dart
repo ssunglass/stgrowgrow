@@ -17,20 +17,50 @@ class SearchState extends AppState {
 
   List<KeyModel> _keylist;
   List<KeyModel> _keyFilterlist;
+  List<KeyModel> keyList = [];
+
+  List<KeyModel> get keylist {
+    if(_keylist == null) {
+      return null;
+
+    } else {
+      return List.from(_keylist);
+    }
+  }
+
 
 
   List<UserModel> _userlist;
 
-  List<KeyModel> keyList = [];
-
-
-  List<KeyModel> get keylist {
-    if(_keyFilterlist == null) {
+  List<UserModel> get userList {
+    if(_userlist == null) {
       return null;
 
     } else {
-      return List.from(_keyFilterlist);
+      return List.from(_userlist.reversed);
     }
+
+
+
+  }
+
+  List<UserModel> getUserList (UserModel userModel) {
+    if (userModel == null ) {
+      return null;
+    }
+
+    List<UserModel> list;
+
+    if(!isBusy && userList != null && userList.isNotEmpty) {
+      list = userList.toList();
+
+      if (list.isEmpty) {
+        list = null;
+      }
+    }
+    return list;
+
+
   }
 
 
@@ -160,11 +190,6 @@ class SearchState extends AppState {
     notifyListeners();
   }
 
-  List<UserModel> userList = [];
-  List<UserModel> getuserDetail() {
-    final list = _userlist.toList();
-    return list;
-  }
 
 
 

@@ -21,6 +21,7 @@ class ProfilePage extends StatefulWidget {
 
   final String profileId;
 
+
   _ProfilePageState createState() => _ProfilePageState();
 
 }
@@ -31,6 +32,8 @@ class _ProfilePageState extends State<ProfilePage>
   TextEditingController _keyword;
   TextEditingController _bio;
   TextEditingController _date;
+  KeyModel _keyModel;
+
 
   String date;
   bool isMyProfile = false;
@@ -200,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-  Widget _keyList(BuildContext context, AuthState authstate,
+  Widget _keyList(BuildContext context, AuthState authstate, int index,
       List<KeyModel> keyList ) {
     List<KeyModel> list;
 
@@ -237,35 +240,28 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-
-
-        : GridView.builder(
-           padding: EdgeInsets.only(top: 50, left: 30, right: 30),
-           itemCount: list.length ,
-
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-           crossAxisSpacing: 10,
-             mainAxisSpacing: 10,
-
-           ),
-
-           itemBuilder: (context, index) => Container(
-             color: Colors.white,
-             child: Keyword(
+        : Wrap(
+           children : <Widget>[
+              Keyword(
                 model: list[index],
-                isDisplayOnProfile: true,
+                isDisplayOnProfile: isMyProfile,
+              ),
 
-            ),
 
-
-         ),
+             ]
 
 
       );
 
 
   }
+
+
+
+
+
+
+
 
   Widget _bioList(BuildContext context, AuthState authstate,
       List<BioModel> bioList, ) {
@@ -309,21 +305,13 @@ class _ProfilePageState extends State<ProfilePage>
 
           itemBuilder: (context, index) => Container(
            color: Colors.white60,
-           child:  Bio()
+           child:  Bio(
+             model: list[index],
+             isDisplayOnProfile: isMyProfile,
+           )
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
 
 
     Future<bool> _onWillPop() async {
@@ -338,171 +326,55 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context);
-    List<KeyModel> list;
+    List<KeyModel> keylist;
     List<BioModel> biolist;
+    int index;
     String id = widget.profileId ?? authstate.userId;
 
     if (authstate.keylist != null && authstate.keylist.length > 0) {
-      list = authstate.keylist.where((x) => x.userId == id).toList();
+      keylist = authstate.keylist.where((x) => x.userId == id).toList();
     }
 
 
 
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Scaffold(
-        appBar: AppBar(
-          actions: <Widget>[
-            Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text('${authstate.userModel.displayName}',),
-                  subtitle: Text('${authstate.userModel.userName}'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.login),
-                  ) ,
+      child: SafeArea(
+        child: Scaffold(
+          key: scaffoldKey,
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Container(
+
+              child: Column(
+                children: <Widget>[
+                  UserProfileWidget(
+                    user: authstate.profileUserModel,
+                    isMyProfile: isMyProfile
                 ),
+
+                  SizedBox(width: 3,),
+                
+                  _keyList(context, authstate,index,keylist)
+
+
 
 
               ],
 
 
-
-
+            ),
 
             ),
 
-          ],
-
-
-
-        ) ,
-        key: scaffoldKey,
-        backgroundColor: Colors.white,
-        body: NestedScrollView(
-
-          headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-           return <Widget>[
-             authstate.isbusy
-                 ? _emptyBox()
-                 : SliverToBoxAdapter(
-                   child: Container(
-                   color: Colors.white,
-                   child: authstate.isbusy
-                     ? SizedBox.shrink()
-                     : UserProfileWidget(
-                   user: authstate.profileUserModel,
-                   isMyProfile: isMyProfile,
-                 ),
-               ),
-             ),
-             Row(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: <Widget>[
-                 _keyList(context, authstate, list),
-                 IconButton(
-                     icon: Icon(Icons.add),
-                     onPressed: () {
-                       showDialog(
-                         context: context,
-                         builder: (_) => AlertDialog(
-                           content: SingleChildScrollView(
-                             child: Column(
-                               mainAxisSize: MainAxisSize.min,
-                               crossAxisAlignment: CrossAxisAlignment.start,
-                               children: <Widget>[
-                                 _entry('keyword', controller: _keyword),
-                                 GestureDetector(
-                                   onTap: _keywordSubmitButton,
-                                   child: Center(
-                                     child: Text('등록'),
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                         ),
-                       );
-                     },
-                 ),
-               ],
-
-
-             ),
-
-             Divider(
-               thickness: 10,
-               indent: 30,
-               endIndent: 30,),
-             Row(
-               children: <Widget>[
-                 Text('Footprint'),
-                 IconButton(
-                     icon: Icon(Icons.add),
-                     onPressed: () {
-                       showDialog(
-                         context: context,
-                         builder: (_) => AlertDialog(
-                           content: SingleChildScrollView(
-                             child: Column(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: <Widget>[
-                                 InkWell(
-                                   onTap: showYear,
-                                   child: _entry('Year',isenable: false,controller: _date),
-
-
-                                 ),
-                                 _entry('Bio',controller: _bio,maxLine: null),
-                                 GestureDetector(
-                                   onTap: _bioSubmitButton,
-                                   child: Center(
-                                     child: Text('추가'),
-                                   ),
-                                 ),
-
-
-
-
-
-                               ],
-
-
-
-                             ),
-
-
-                           ),
-                           
-                         ),
-
-
-                       );
-                     },)
-
-
-               ],
-
-             ),
-
-
-
-        ];
-
-        },
-
-        body:Container(
-          child: _bioList(context, authstate, biolist),
+          ),
 
 
 
         ),
 
 
-        ),
-
-
-    )
+      ),
     );
   }
 
@@ -557,30 +429,61 @@ class UserProfileWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
 
-        Divider(
-          height: 20,
-          thickness: 3,
-          indent: 20,
-          endIndent: 60,
+
+        Row(
+          children: <Widget>[
+            Text(
+              user.displayName,
+              style: const TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold
+
+              ) ,
+            ),
+            IconButton(icon: Icon(Icons.login),
+
+
+            ),
+          ],
         ),
 
-        // Container(
-        //   alignment: Alignment.center,
-        //   child: Row(
-        //     children: <Widget>[
-        //       SizedBox(
-        //         width: 20,
-        //         height: 20,
-        //       ),
-        //       //_tapableText(context, '${user.getFollower()}',
-        //      //     'Followers', 'FollowerListPage'),
-        //       SizedBox(width: 40,),
-        //       _tapableText(context, '${user.getFollowing()}',
-        //           '스크랩', 'FollowingListPage'),
-        //
-        //     ],
-        //   ),
-        // ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 9),
+          child: Text(
+            '${user.userName}',
+          ),
+        ),
+
+        SizedBox(height: 5,),
+
+       Container(
+
+         margin: const EdgeInsets.only(left: 10, right: 100),
+         child:  Divider(
+           height: 20,
+           thickness: 3,
+         ),
+
+       ),
+
+
+        /* Container(
+           alignment: Alignment.center,
+           child: Row(
+             children: <Widget>[
+               SizedBox(
+                 width: 20,
+                 height: 20,
+               ),
+              //_tapableText(context, '${user.getFollower()}',
+              //     'Followers', 'FollowerListPage'),
+               SizedBox(width: 40,),
+              _tapableText(context, '${user.getFollowing()}',
+                  '스크랩', 'FollowingListPage'),
+
+             ],
+           ),
+         ),*/
 
 
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
@@ -590,6 +493,8 @@ class UserProfileWidget extends StatelessWidget {
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
           child: Text('${user.major}'),
         ),
+
+        SizedBox(height: 5,),
 
         Divider(
           height: 20,
@@ -602,9 +507,14 @@ class UserProfileWidget extends StatelessWidget {
         child: Text(getSummary(user.summary),
         ),
         ),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Text('${user.interestList}'),
+
+        Divider(
+          height: 20,
+          thickness: 3,
+          indent: 20,
+          endIndent: 60,
         ),
+
 
 
 

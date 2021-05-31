@@ -6,23 +6,20 @@ import 'package:stgrowgrow/page/profile/profilepage.dart';
 import 'package:stgrowgrow/page/userListWidget.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/searchstate.dart';
+import 'package:stgrowgrow/state/appstate.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/model/user.dart';
-import 'package:stgrowgrow/widgets/customloader.dart';
+import 'dart:math';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'package:stgrowgrow/widgets/emptyList.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 
 class InformPage extends StatelessWidget {
-  const InformPage({Key key,this.scaffoldKey,this.refreshIndicatorKey}) : super(key: key);
-
+  const InformPage({Key key, this.scaffoldKey, this.refreshIndicatorKey})
+      : super(key: key);
 
   final GlobalKey<ScaffoldMessengerState> scaffoldKey;
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +31,8 @@ class InformPage extends StatelessWidget {
           child: RefreshIndicator(
             key: refreshIndicatorKey,
             onRefresh: () async {
-              var searchState = Provider.of<SearchState>(context,listen: false);
+              var searchState =
+              Provider.of<SearchState>(context, listen: false);
               searchState.getUserDataFromDatabase();
               return Future.value(true);
             },
@@ -42,179 +40,146 @@ class InformPage extends StatelessWidget {
               refreshIndicatorKey: refreshIndicatorKey,
               scaffoldKey: scaffoldKey,
             ),
-
           ),
-
         ),
-
       ),
     );
-
   }
 }
 
 class _InFormBody extends StatelessWidget {
   final GlobalKey<ScaffoldMessengerState> scaffoldKey;
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
-  final List<String> userIdsList;
 
-  const _InFormBody({Key key,
+  const _InFormBody({
+    Key key,
     this.scaffoldKey,
     this.refreshIndicatorKey,
-    this.userIdsList}) : super(key: key);
-
-
-
-
-
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var authstate = Provider.of<AuthState>(context, listen:false);
+    final authstate = Provider.of<AuthState>(context);
+    var appstate = Provider.of<AppState>(
+      context,
+    );
+
+
+
     return Consumer<SearchState>(
-      builder: (context,state,child) {
-        final List<UserModel> list = state.getuserDetail();
-
+      builder: (context, state, child) {
+        final List<UserModel> list = state.getUserList(authstate.userModel);
+        final _random = new Random();
         return CustomScrollView(
-          slivers: <Widget>[
-            child,
+            slivers: <Widget>[
+              SliverToBoxAdapter(
+                  child: Container(
+                      margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                      width: 100,
+                      height: 130,
+                      child: Card(
+                          color: Colors.white70,
+                          child: InkWell(
+                            onTap: () {
+                              appstate.setpageIndex = 2;
+                            },
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
 
-            Divider(
-              thickness: 3,
-              endIndent: 3,
-              indent: 3,
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 7, left: 7),
+                                    child: Text(
+                                      authstate.userModel.displayName,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 35),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 5, left: 9),
+                                    child: Text(
+                                      authstate.userModel.userName,
+                                      style: const TextStyle(
 
-            ),
-
-            SizedBox(height: 20,),
-
-            Divider(
-              thickness: 15,
-              endIndent: 15,
-              indent: 15,
-
-            ),
-
-            SizedBox(height: 5,),
-
-            SliverStickyHeader(
-              header: Container(
-                height: 100,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                alignment: Alignment.center,
-                child: Text(
-                  '다른 사람들은 지금을 \n어떻게 보내고 있을까?',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 30,
-
-                  ),
-
-                ),
-
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 30, left: 250),
+                                    child: Text(
+                                      '내 커리어 바로가기',
+                                      style: const TextStyle(
+                                        color: Colors.black38,
+                                      ),
+                                    ),
+                                  ),
+                                ]),
+                          )))
               ),
 
-            ),
-            state.isBusy && list == null
-             ? SliverToBoxAdapter(
-                 child: Container(
-                   height: fullHeight(context) -135,
-                   child: CustomScreenLoader(
-                     height: double.infinity,
-                     width: fullWidth(context),
-                     backgroundColor: Colors.black45,
-
-                   ),
-
-
-                 ) ,
-
-
-            )
-            : !state.isBusy && list ==null
-               ? SliverToBoxAdapter(
-                  child: EmptyList(
-                    'No User have enjoyed'
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: EdgeInsets.only(top: 15, right: 15, left: 15),
+                  child: Divider(
+                    thickness: 3,
 
                   ),
 
-
-
-            )
-
-               : UserListWidget(
-                   list: list,
                 ),
+              ),
 
-        ],
+              SliverToBoxAdapter(
+                  child: Container(
+                    color: Colors.amberAccent,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                            margin: EdgeInsets.only(
+                                top: 20, right: 70, left: 70, bottom: 20),
+                            child: Text("다른 사람들은 지금을 \n어떻게 보내고 있을까?",
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold
+                              ),
+
+                            )
+
+                        ),
 
 
+                      ],
+                    ),
+
+
+                  ),
+              ),
+
+              SliverStaggeredGrid.countBuilder(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 4.0,
+                  mainAxisSpacing: 4.0,
+                  staggeredTileBuilder: (int index) =>
+                    StaggeredTile.fit(2),
+                  itemBuilder: (context, index) =>
+                      Container(
+                        child: UserTile(
+                          user: list[index],
+                        ),
+
+                      ) ,
+                  itemCount: _random.nextInt(list.length))
+
+
+            ]
         );
 
 
       },
 
-      child: Card(
-        margin: EdgeInsets.fromLTRB(30, 30, 30, 30),
-        color: Colors.white70,
-        child: InkWell(
-           onTap: () {
-             Navigator.push(
-               context,
-               MaterialPageRoute(
-                 builder: (context) => ProfilePage(),
-               ),
-             );
-
-
-           },
-
-            child: Column(
-             children: <Widget>[
-              Text(
-                authstate.profileUserModel.displayName,
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
-
-                ) ,
-              ),
-
-              Text(
-                  authstate.profileUserModel.userName,
-                style: const TextStyle(
-                  fontSize: 10,
-                ),
-              ),
-               Padding(
-                 padding: EdgeInsets.symmetric(),
-                 child: Text('내 커리어 바로가기',
-                             style: const TextStyle(
-                               color: Colors.black38,
-                             ),
-                 ),
-             ),
-
-          ],
-
-
-
-        ),
-
-        ),
-
-
-      ),
-
 
     );
-
-
-
-
   }
-
-
-
-
 }

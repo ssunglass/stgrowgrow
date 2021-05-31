@@ -14,7 +14,7 @@ import 'package:stgrowgrow/widgets/title_text.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:math';
 
-class UserListWidget extends StatelessWidget {
+/* class UserListWidget extends StatelessWidget {
   final List<UserModel> list;
 
   UserListWidget({
@@ -46,7 +46,7 @@ class UserListWidget extends StatelessWidget {
 
   }
 
-}
+} */
 
 class UserTile extends StatelessWidget {
   const UserTile ({Key key, this.user, this.myId}) : super(key: key);
