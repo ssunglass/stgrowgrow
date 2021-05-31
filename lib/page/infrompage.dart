@@ -9,7 +9,6 @@ import 'package:stgrowgrow/state/searchstate.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/model/user.dart';
-import 'dart:math';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 
 
@@ -69,7 +68,7 @@ class _InFormBody extends StatelessWidget {
     return Consumer<SearchState>(
       builder: (context, state, child) {
         final List<UserModel> list = state.getUserList(authstate.userModel);
-        final _random = new Random();
+
         return CustomScrollView(
             slivers: <Widget>[
               SliverToBoxAdapter(
@@ -170,7 +169,7 @@ class _InFormBody extends StatelessWidget {
                         ),
 
                       ) ,
-                  itemCount: _random.nextInt(list.length))
+                  itemCount: list.length)
 
 
             ]
