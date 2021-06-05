@@ -25,12 +25,12 @@ class MyApp extends StatelessWidget {
 
       ],
       child: MaterialApp(
-        title: '커커',
+        title: "커커",
         debugShowCheckedModeBanner: false,
         routes: Routes.route(),
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknowRoute(settings),
-        initialRoute: 'SplashPage',
+        initialRoute: "SplashPage",
       ),
     );
   }

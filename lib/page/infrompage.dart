@@ -49,19 +49,22 @@ class InformPage extends StatelessWidget {
 class _InFormBody extends StatelessWidget {
   final GlobalKey<ScaffoldMessengerState> scaffoldKey;
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
+  final UserModel user;
 
   const _InFormBody({
     Key key,
     this.scaffoldKey,
+    this.user,
     this.refreshIndicatorKey,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final authstate = Provider.of<AuthState>(context);
+    final authstate = Provider.of<AuthState>(context,listen: false);
     var appstate = Provider.of<AppState>(
       context,
     );
+    String myId = authstate.userModel.key;
 
 
 
@@ -80,7 +83,8 @@ class _InFormBody extends StatelessWidget {
                           color: Colors.white70,
                           child: InkWell(
                             onTap: () {
-                              appstate.setpageIndex = 2;
+                              Navigator.of(context).pushNamed('/ProfilePage/' + user?.userId);
+                              /*appstate.setpageIndex = 2;*/
                             },
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,9 +103,7 @@ class _InFormBody extends StatelessWidget {
                                     padding: EdgeInsets.only(top: 5, left: 9),
                                     child: Text(
                                       authstate.userModel.userName,
-                                      style: const TextStyle(
 
-                                      ),
                                     ),
                                   ),
                                   Padding(
@@ -156,19 +158,20 @@ class _InFormBody extends StatelessWidget {
                   ),
               ),
 
-              SliverStaggeredGrid.countBuilder(
+
+                SliverStaggeredGrid.countBuilder(
                   crossAxisCount: 4,
-                  crossAxisSpacing: 4.0,
-                  mainAxisSpacing: 4.0,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
                   staggeredTileBuilder: (int index) =>
                     StaggeredTile.fit(2),
                   itemBuilder: (context, index) =>
-                      Container(
-                        child: UserTile(
+                        UserTile(
                           user: list[index],
+                          myId: myId,
                         ),
 
-                      ) ,
+
                   itemCount: list.length)
 
 

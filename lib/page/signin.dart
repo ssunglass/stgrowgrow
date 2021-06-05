@@ -74,6 +74,7 @@ class _SignInState extends State<SignIn> {
         if(onPressed != null)
           onPressed();
       },
+
       child: Text(
         title,
         style: TextStyle(

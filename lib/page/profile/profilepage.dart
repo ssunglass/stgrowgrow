@@ -64,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage>
     super.initState();
   }
 
+  @override
   void dispose() {
     _keyword.dispose();
     _bio.dispose();
@@ -153,25 +154,12 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
-  void _bioSubmitButton() async {
-    if(_bio.text == null ||
-       _bio.text.isEmpty ||
-       _bio.text.length > 300) {
-      return;
-
-    }
-
-    var state = Provider.of<AuthState>(context, listen: false);
-
-
-   BioModel bioModel = createBioModel();
-   state.createBio(bioModel);
-
-    Navigator.of(context).pop();
-
+  void openDialog () {
 
 
   }
+
+
 
   KeyModel createKeyModel() {
 
@@ -343,8 +331,7 @@ class _ProfilePageState extends State<ProfilePage>
         child: Scaffold(
           key: scaffoldKey,
           backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Container(
+          body: Container(
 
               child: Column(
                 children: <Widget>[
@@ -353,9 +340,41 @@ class _ProfilePageState extends State<ProfilePage>
                     isMyProfile: isMyProfile
                 ),
 
-                  SizedBox(width: 3,),
+                  SizedBox(width: 3,height: 10,),
+
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    _entry('keyword', controller: _keyword),
+                                    GestureDetector(
+                                      onTap: _keywordSubmitButton,
+                                      child: Center(
+                                        child: Text('등록'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }, 
+                         ),
+
+                  ),
                 
-                  _keyList(context, authstate,index,keylist)
+                  _keyList(context, authstate,index,keylist),
+
+                  SizedBox(width: 3,height: 10,)
 
 
 
@@ -367,7 +386,7 @@ class _ProfilePageState extends State<ProfilePage>
 
             ),
 
-          ),
+
 
 
 
@@ -402,25 +421,6 @@ class UserProfileWidget extends StatelessWidget {
     }
   }
 
-  Widget _tapableText(BuildContext context, String count, String text, String navigateTo) {
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, '/$navigateTo');
-      },
-      child: Row(
-        children: <Widget>[
-          Text(
-            '$count'
-          ),
-          Text('$text')
-        ],
-      ),
-
-    );
-
-  }
-
-
 
 
   @override
@@ -432,13 +432,16 @@ class UserProfileWidget extends StatelessWidget {
 
         Row(
           children: <Widget>[
-            Text(
-              user.displayName,
-              style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
+            Padding(
+              padding: EdgeInsets.only(top: 7,left: 7),
+               child: Text(
+                 user.displayName,
+                 style: const TextStyle(
+                     fontSize: 35,
+                     fontWeight: FontWeight.bold
 
-              ) ,
+                 ) ,
+               ),
             ),
             IconButton(icon: Icon(Icons.login),
 
@@ -448,71 +451,57 @@ class UserProfileWidget extends StatelessWidget {
         ),
 
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 9),
+          padding: EdgeInsets.only(top: 5, left: 9),
           child: Text(
             '${user.userName}',
           ),
         ),
 
-        SizedBox(height: 5,),
-
        Container(
-
-         margin: const EdgeInsets.only(left: 10, right: 100),
+         margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
          child:  Divider(
-           height: 20,
            thickness: 3,
          ),
 
        ),
 
 
-        /* Container(
-           alignment: Alignment.center,
-           child: Row(
-             children: <Widget>[
-               SizedBox(
-                 width: 20,
-                 height: 20,
-               ),
-              //_tapableText(context, '${user.getFollower()}',
-              //     'Followers', 'FollowerListPage'),
-               SizedBox(width: 40,),
-              _tapableText(context, '${user.getFollowing()}',
-                  '스크랩', 'FollowingListPage'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+           Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+             child: Text('${user.department}'),
+          ),
 
-             ],
-           ),
-         ),*/
-
-
-        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Text('${user.department}'),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+             child: Text('${user.major}'),
         ),
 
-        Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Text('${user.major}'),
+        ],
+
         ),
 
-        SizedBox(height: 5,),
+        Container(
+          margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+          child:  Divider(
+            thickness: 3,
+          ),
 
-        Divider(
-          height: 20,
-          thickness: 3,
-          indent: 20,
-          endIndent: 60,
         ),
+
 
         Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
         child: Text(getSummary(user.summary),
         ),
         ),
 
-        Divider(
-          height: 20,
-          thickness: 3,
-          indent: 20,
-          endIndent: 60,
+
+        Container(
+          margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+          child:  Divider(
+            thickness: 3,
+          ),
+
         ),
 
 

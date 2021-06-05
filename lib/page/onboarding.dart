@@ -67,12 +67,12 @@ class onboarding extends StatelessWidget{
             ),
             onDone: (){
               Navigator.push(context, MaterialPageRoute(
-                builder: (_)=> Welcomepage(),
+                builder: (_)=> WelcomePage(),
               ),);
             },
             onSkip:(){
               Navigator.push(context, MaterialPageRoute(
-                builder: (_)=> Welcomepage() ,
+                builder: (_)=> WelcomePage() ,
               ),);
 
 

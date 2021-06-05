@@ -10,8 +10,8 @@ import 'package:stgrowgrow/page/signup.dart';
 
 
 
-class Welcomepage extends StatefulWidget{
-  Welcomepage({Key key}) : super(key: key);
+class WelcomePage extends StatefulWidget{
+  WelcomePage({Key key}) : super(key: key);
 
   @override
   _WelcomePageState createState() => _WelcomePageState();
@@ -19,9 +19,11 @@ class Welcomepage extends StatefulWidget{
 
 }
 
-class _WelcomePageState extends State<Welcomepage> {
+class _WelcomePageState extends State<WelcomePage> {
     Widget _submitButton(){
       return Container(
+        margin: EdgeInsets.symmetric(vertical: 15),
+        width: MediaQuery.of(context).size.width,
 
         child: TextButton(
           onPressed: (){
@@ -29,7 +31,7 @@ class _WelcomePageState extends State<Welcomepage> {
             Navigator.push(
               context,
                 MaterialPageRoute(
-                    builder: (context) => Signup(loginCallback: state.getCurrentUser),
+                    builder: (context) => SignUp(loginCallback: state.getCurrentUser),
             ),
             );
             },

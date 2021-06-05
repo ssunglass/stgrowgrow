@@ -38,8 +38,8 @@ class TabItem extends StatelessWidget {
   final double textYAlign = TEXT_OFF;
   final double iconAlpha = ALPHA_ON;
 
-  @override
 
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Stack(

@@ -16,18 +16,17 @@ import 'package:http/http.dart' as http;
 
 
 
-class Signup extends StatefulWidget {
+class SignUp extends StatefulWidget {
   final VoidCallback loginCallback;
 
-  const Signup({Key key, this.loginCallback}) : super(key: key);
+  const SignUp({Key key, this.loginCallback}) : super(key: key);
   @override
-  State<StatefulWidget> createState() => _SignupState();
+  State<StatefulWidget> createState() => _SignUpState();
 
 
 }
 
-class _SignupState extends State<Signup>{
-
+class _SignUpState extends State<SignUp>{
 
 
   TextEditingController _nameController;

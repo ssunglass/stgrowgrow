@@ -95,9 +95,24 @@ class _SplashPageState extends State<SplashPage> {
         width: height,
         alignment: Alignment.center,
         child: Container(
+               padding: EdgeInsets.all(50),
+               decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(
+                 Radius.circular(10),
+                 ),
+                   ),
 
           child: Stack(
             children: <Widget> [
+              Platform.isIOS
+              ? CupertinoActivityIndicator(
+                radius: 35,
+
+              )
+                  : CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
 
             ],
 
@@ -118,7 +133,7 @@ class _SplashPageState extends State<SplashPage> {
       body: state.authStatus == AuthStatus.NOT_DETERMINED
       ? _body()
       : state.authStatus == AuthStatus.NOT_LOGGED_IN
-         ? Welcomepage()
+         ? WelcomePage()
          : HomePage(),
 
     );

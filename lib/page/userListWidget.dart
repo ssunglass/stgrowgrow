@@ -70,7 +70,7 @@ class UserTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
-      color: Colors.white,
+      color: Colors.cyan,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
