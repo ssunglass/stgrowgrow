@@ -50,6 +50,12 @@ class _HomePageState extends State<HomePage> {
 
   }
 
+  @override
+  void dispose() {
+
+    super.dispose();
+  }
+
   void initProfile() {
     var state = Provider.of<AuthState>(context, listen: false);
     state.databaseInit();

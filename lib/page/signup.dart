@@ -1,17 +1,13 @@
-import 'dart:math';
-import 'dart:convert';
-
-import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/enum.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
+
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/helper/utility.dart';
-import 'package:http/http.dart' as http;
+import 'package:stgrowgrow/theme/theme.dart';
 
 
 
@@ -102,43 +98,11 @@ class _SignUpState extends State<SignUp>{
     super.dispose();
   }
 
-  Widget _entryField(String hint,
-      {TextEditingController controller,
-        bool isPassword = false,
-        bool isEmail = false})  {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.blueAccent,
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          hintText: hint,
-          border: InputBorder.none,
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(50),
-            ),
-            borderSide: BorderSide(color: Colors.blueAccent),
 
-          ),
-          contentPadding: EdgeInsets.symmetric(vertical: 15,horizontal:20,)
-
-        ),
-
-      ),
-
-    );
-  }
 
   Widget _submitButton(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
-      width: MediaQuery.of(context).size.width,
       child: TextButton(
         onPressed: _submitForm,
         child: Text('회원가입', style: TextStyle(color: Colors.blueAccent),),
@@ -148,23 +112,56 @@ class _SignUpState extends State<SignUp>{
     );
   }
 
+  Widget _entryField(String hint,
+      {TextEditingController controller,
+        bool isPassword = false,
+        bool isEmail = false}) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
+        style: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.normal,
+        ),
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          hintText: hint,
+          border: InputBorder.none,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(30.0),
+            ),
+            borderSide: BorderSide(color: Colors.blue),
+          ),
+          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        ),
+      ),
+    );
+  }
+
 
 
   void _submitForm() {
     if (_nameController.text.isEmpty) {
-      customSnackBar(_scaffoldKey, '이름을 입력해주세요');
+      Utility.customSnackBar(_scaffoldKey, '이름을 입력해주세요');
       return;
     }
     if(_nicknameController.text.isEmpty) {
-      customSnackBar(_scaffoldKey, '닉네임을 입력해주세요');
+      Utility.customSnackBar(_scaffoldKey, '닉네임을 입력해주세요');
       return;
     }
     if(_nameController.text.length > 27) {
-      customSnackBar(_scaffoldKey, '이름이 너무 깁니다');
+      Utility.customSnackBar(_scaffoldKey, '이름이 너무 깁니다');
       return;
     }
     if(_majorController.text.isEmpty){
-      customSnackBar(_scaffoldKey, '세부 전공을 입력해주세요');
+      Utility.customSnackBar(_scaffoldKey, '세부 전공을 입력해주세요');
       return;
     }
     if (_emailController.text == null ||
@@ -172,10 +169,10 @@ class _SignUpState extends State<SignUp>{
         _passwordController.text == null ||
         _passwordController.text.isEmpty ||
         _confirmController.text == null) {
-      customSnackBar(_scaffoldKey, '제대로 입력해주세요');
+      Utility.customSnackBar(_scaffoldKey, '제대로 입력해주세요');
       return;
     } else if (_passwordController.text != _confirmController.text) {
-      customSnackBar(_scaffoldKey, '비밀번호가 일치하지 않습니다');
+      Utility.customSnackBar(_scaffoldKey, '비밀번호가 일치하지 않습니다');
       return;
     }
 
@@ -183,24 +180,17 @@ class _SignUpState extends State<SignUp>{
 
     loader.showLoader(context);
     var state = Provider.of<AuthState>(context, listen: false);
-    Random random = new Random();
-    int randomNumber = random.nextInt(8);
 
 
     UserModel user = UserModel(
       email: _emailController.text.trim().toLowerCase(),
-      nickName: _nicknameController.text.trim(),
+      nickName: _nicknameController.text,
       summary: '한줄요약',
-      displayName: _nameController.text.trim(),
+      displayName: _nameController.text,
       department: _selectedDepartment,
-      major: _majorController.text.trim(),
+      major: _majorController.text,
       interestList: selectedinterestList,
       university: _selectedUniv,
-
-
-
-
-
       isVerified: false,
     );
     state
@@ -315,7 +305,7 @@ class _SignUpState extends State<SignUp>{
   
   Widget _body(BuildContext context) {
     return Container(
-      height: fullHeight(context) ,
+      height: context.height -88,
       padding: EdgeInsets.symmetric(horizontal: 30),
       child: Form(
         key: _formKey,

@@ -10,7 +10,10 @@ import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 import 'package:intl/intl.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
+
+
 
 
 
@@ -69,33 +72,6 @@ class Utility {
     return 'Joined $dat';
   }
 
-  static String getChatTime(String date) {
-    if (date == null || date.isEmpty) {
-      return '';
-    }
-    String msg = '';
-    var dt = DateTime.parse(date).toLocal();
-
-    if (DateTime.now().toLocal().isBefore(dt)) {
-      return DateFormat.jm().format(DateTime.parse(date).toLocal()).toString();
-    }
-
-    var dur = DateTime.now().toLocal().difference(dt);
-    if (dur.inDays > 0) {
-      msg = '${dur.inDays} d';
-      return dur.inDays == 1 ? '1d' : DateFormat("dd MMM").format(dt);
-    } else if (dur.inHours > 0) {
-      msg = '${dur.inHours} h';
-    } else if (dur.inMinutes > 0) {
-      msg = '${dur.inMinutes} m';
-    } else if (dur.inSeconds > 0) {
-      msg = '${dur.inSeconds} s';
-    } else {
-      msg = 'now';
-    }
-    return msg;
-  }
-
   static String getPollTime(String date) {
     int hr, mm;
     String msg = 'Poll ended';
@@ -140,6 +116,14 @@ class Utility {
     return url;
   }
 
+  static launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      cprint('Could not launch $url');
+    }
+  }
+
 
 
   static void logEvent(String event, {Map<String, dynamic> parameter}) {
@@ -153,6 +137,9 @@ class Utility {
     print("[$time][Log]: $log, $param");
   }
 
+  static void share(String message, {String subject}) {
+    Share.share(message, subject: subject);
+  }
 
   static List<String> getHashTags(String text) {
     RegExp reg = RegExp(
@@ -193,6 +180,24 @@ class Utility {
       return false;
     }
     return true;
+  }
+
+  static customSnackBar(GlobalKey<ScaffoldMessengerState> _scaffoldKey, String msg,
+      {double height = 30, Color backgroundColor = Colors.black}) {
+    if (_scaffoldKey == null || _scaffoldKey.currentState == null) {
+      return;
+    }
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    final snackBar = SnackBar(
+      backgroundColor: backgroundColor,
+      content: Text(
+        msg,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   static bool validateEmail(String email) {

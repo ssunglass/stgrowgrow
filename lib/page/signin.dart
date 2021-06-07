@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/helper/utility.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
+import 'package:stgrowgrow/theme/theme.dart';
 
 
 
@@ -87,7 +87,7 @@ class _SignInState extends State<SignIn> {
 
  Widget _emailLoginButton(BuildContext context) {
     return Container(
-      width: fullWidth(context),
+      width: context.width,
       margin: EdgeInsets.symmetric(vertical: 35),
       child: TextButton(
         onPressed: _emailLogin,

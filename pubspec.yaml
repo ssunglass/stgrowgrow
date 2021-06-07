@@ -35,7 +35,9 @@ dependencies:
   firebase_database: 6.0.0
   firebase_analytics: 7.0.1
   firebase_messaging: 6.0.16
-
+  get_it: ^7.1.3
+  shared_preferences: ^0.5.1+2
+  equatable: ^2.0.0
 
   provider: 4.3.3
   package_info: 0.4.3+4
@@ -48,7 +50,8 @@ dependencies:
   google_fonts: 1.1.2
   dropdownfield: ^1.0.3
   filter_list: ^0.0.9
-
+  url_launcher:
+  share: ^0.6.3
 
 
   http: 0.12.2

@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as Path;
 import 'package:stgrowgrow/helper/enum.dart';
+import 'package:stgrowgrow/helper/shared_preference_helper.dart';
 import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/model/bio.dart';
 import 'package:stgrowgrow/model/keyword.dart';
+import 'package:stgrowgrow/page/locator.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
@@ -18,9 +20,7 @@ import 'package:firebase_database/firebase_database.dart' as dabase;
 
 
 class AuthState extends AppState{
-
   bool isBusy = false;
-
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   bool isSignInWithGoogle = false;
   User user;
@@ -29,26 +29,23 @@ class AuthState extends AppState{
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   dabase.Query _profileQuery;
-  dabase.Query _keyQuery;
-  dabase.Query _bioQuery;
-
-  List<KeyModel> _keylist;
-  List<UserModel> _profileUserModelList;
-  List<BioModel> _biolist;
 
   UserModel _userModel;
+
+  UserModel get userModel => _userModel;
+
+  UserModel get profileUserModel => _userModel;
+
+    dabase.Query _keyQuery;
+  List<KeyModel> _keylist;
+
+    dabase.Query _bioQuery;
+  List<BioModel> _biolist;
   BioModel _bioModel;
 
   BioModel get bioModel => _bioModel;
-  UserModel get userModel => _userModel;
 
-  UserModel get profileUserModel {
-    if(_profileUserModelList != null && _profileUserModelList.length > 0) {
-      return _profileUserModelList.last;
-    }else {
-      return null;
-    }
-  }
+
 
   List<KeyModel> get keylist {
     if(_keylist == null) {
@@ -69,9 +66,6 @@ class AuthState extends AppState{
 
 
   }
-
-
-
 
 
   Future<bool> KeydatabaseInit() {
@@ -97,7 +91,7 @@ class AuthState extends AppState{
       _keylist = null;
       notifyListeners();
       kDatabase.child('profile').child(user.uid).child('keyword').once().then((DataSnapshot snapshot) {
-        _keylist = [];
+        _keylist = <KeyModel>[];
         if (snapshot.value != null) {
           var map = snapshot.value;
           if (map != null) {
@@ -119,11 +113,9 @@ class AuthState extends AppState{
       isBusy = false;
       cprint(error, errorIn: 'getKeyDataFromDatabase');
     }
-
-
-
-
   }
+
+
 
   createKeyword(KeyModel model) {
     isBusy = true;
@@ -139,10 +131,10 @@ class AuthState extends AppState{
     notifyListeners();
   }
 
-  deleteKeyword() {
+  deleteKeyword(String keyId) {
 
     try {
-      kDatabase.child('profile').child(user.uid).child('keyword')
+      kDatabase.child('profile').child(user.uid).child('keyword').child(keyId)
           .remove()
           .then((_) {
         cprint('Keyword deleted');
@@ -159,7 +151,7 @@ class AuthState extends AppState{
 
     keyword.key = event.snapshot.key;
     if (_keylist == null) {
-      _keylist = [];
+      _keylist = <KeyModel>[];
     }
     if (_keylist.length == 0 || _keylist.any((x) => x.key != keyword.key)
     ) {
@@ -195,11 +187,12 @@ class AuthState extends AppState{
    _onKeywordRemoved(Event event) async {
     KeyModel keyword = KeyModel.fromJson(event.snapshot.value);
     keyword.key = event.snapshot.key;
+    var keyId = keyword.key;
 
     try{
       KeyModel deletedKeyword;
       if(_keylist.any((x) => x.key == keyword.key)) {
-        deletedKeyword = _keylist.firstWhere((x) => x.key == keyword.key);
+        deletedKeyword = _keylist.firstWhere((x) => x.key == keyId);
         _keylist.remove(deletedKeyword);
       }
 
@@ -241,7 +234,7 @@ class AuthState extends AppState{
       _biolist = null;
       notifyListeners();
       kDatabase.child('profile').child(user.uid).child('bio').once().then((DataSnapshot snapshot) {
-        _biolist = [];
+        _biolist = <BioModel>[];
         if (snapshot.value != null) {
           var map = snapshot.value;
           if (map != null) {
@@ -282,10 +275,10 @@ class AuthState extends AppState{
     notifyListeners();
   }
 
-  deleteBio() {
+  deleteBio(String bioId) {
 
     try {
-      kDatabase.child('profile').child(user.uid).child('bio')
+      kDatabase.child('profile').child(user.uid).child('bio').child(bioId)
           .remove()
           .then((_) {
         cprint('Bio deleted');
@@ -302,7 +295,7 @@ class AuthState extends AppState{
 
     bio.key = event.snapshot.key;
     if (_biolist == null) {
-      _biolist = [];
+      _biolist = <BioModel>[];
     }
     if (_biolist.length == 0 || _biolist.any((x) => x.key != bio.key)
     ) {
@@ -337,11 +330,12 @@ class AuthState extends AppState{
   _onBioRemoved(Event event) async {
     BioModel bio = BioModel.fromJson(event.snapshot.value);
     bio.key = event.snapshot.key;
+    var bioId = bio.key;
 
     try{
       BioModel deletedKeyword;
-      if(_biolist.any((x) => x.key == bio.key)) {
-        deletedKeyword = _biolist.firstWhere((x) => x.key == bio.key);
+      if(_biolist.any((x) => x.key == bioId)) {
+        deletedKeyword = _biolist.firstWhere((x) => x.key == bioId);
         _biolist.remove(deletedKeyword);
       }
 
@@ -360,15 +354,6 @@ class AuthState extends AppState{
 
 
 
-
-
-  void removeLastUser() {
-    _profileUserModelList.removeLast();
-
-  }
-
-
-
   Future<String> signIn(String email, String password,
   {GlobalKey<ScaffoldMessengerState> scaffoldKey}) async {
     try{
@@ -382,7 +367,7 @@ class AuthState extends AppState{
       loading = false;
       cprint(error, errorIn: 'signIn');
       kAnalytics.logLogin(loginMethod: 'email_login');
-      customSnackBar(scaffoldKey, error.message);
+      Utility.customSnackBar(scaffoldKey, error.message);
       return null;
     }
   }
@@ -392,7 +377,8 @@ class AuthState extends AppState{
     try{
       loading = true;
       var result =await _firebaseAuth.createUserWithEmailAndPassword(
-          email: userModel.email, password: password,
+          email: userModel.email,
+        password: password,
       );
       user = result.user;
       authStatus = AuthStatus.LOGGED_IN;
@@ -405,10 +391,10 @@ class AuthState extends AppState{
       _userModel.userId = user.uid;
       createUser(_userModel, newUser: true);
       return user.uid;
-    }catch(error) {
+    } catch(error) {
       loading = false;
       cprint(error, errorIn: 'signUp');
-      customSnackBar(scaffoldKey, error.message);
+      Utility.customSnackBar(scaffoldKey, error.message);
       return null;
 
     }
@@ -417,8 +403,11 @@ class AuthState extends AppState{
 
   }
 
+
+
   createUser(UserModel user, {bool newUser = false}) {
-    if (newUser) {user.userName=
+    if (newUser) {
+      user.userName=
       Utility.getUserName(name: user.nickName);
       kAnalytics.logEvent(name: 'create_newUser');
 
@@ -428,14 +417,8 @@ class AuthState extends AppState{
 
     kDatabase.child('profile').child(user.userId).set(user.toJson());
     _userModel = user;
-    if (_profileUserModelList != null) {
-      _profileUserModelList.last = _userModel;
-    }
     loading = false;
   }
-
-
-
 
 
 
@@ -457,9 +440,7 @@ class AuthState extends AppState{
   void _onProfileChanged(Event event) {
     if(event.snapshot != null){
       final updateUser = UserModel.fromJson(event.snapshot.value);
-      if(updateUser.userId == user.uid) {
-        _userModel = updateUser;
-      }
+     _userModel = updateUser;
      cprint('UserModel Updated');
     notifyListeners();
     }
@@ -504,9 +485,6 @@ class AuthState extends AppState{
   getProfileUser({String userProfileId}) {
     try {
       loading = true;
-      if (_profileUserModelList == null) {
-        _profileUserModelList = [];
-      }
 
       userProfileId = userProfileId == null ? user.uid : userProfileId;
       kDatabase
@@ -517,22 +495,27 @@ class AuthState extends AppState{
         if (snapshot.value != null) {
           var map = snapshot.value;
           if (map != null) {
-            _profileUserModelList.add(UserModel.fromJson(map));
-            if (userProfileId == user.uid) {
-              _userModel = _profileUserModelList.last;
-              _userModel.isVerified = user.emailVerified;
-              if (!user.emailVerified) {
-                reloadUser();
-              }
-              if (_userModel.fcmToken == null) {
-                updateFCMToken();
-              }
-            }
+              if ( userProfileId == user.uid) {
+                _userModel = UserModel.fromJson(map);
+                _userModel.isVerified = user.emailVerified;
 
-            Utility.logEvent('get_profile');
+                if (!user.emailVerified) {
+                  reloadUser();
+                }
+
+                if (_userModel.fcmToken == null) {
+                  updateFCMToken();
+              }
+
+                getIt<SharedPreferenceHelper>().saveUserProfile(_userModel);
+
+
+              }
+              Utility.logEvent('get_profile');
+
           }
-        }
 
+          }
         loading = false;
       });
     } catch(error) {
@@ -542,22 +525,20 @@ class AuthState extends AppState{
 
   }
 
- // Future<void> updateUserProfile(UserModel userModel,
- //     ) async {
- //   try {
- //       if (userModel != null) {
- //         kDatabase.child('profile').child(user.uid).update(userModel.toJson());
- //       } else {
- //         kDatabase.child('profile').child(user.uid).update(_userModel.toJson());
- //       }
+  Future<void> updateUserProfile(UserModel userModel,
+      ) async {
+    try {
+        if (userModel != null) {
+          kDatabase.child('profile').child(user.uid).update(userModel.toJson());
+       } else {
+       kDatabase.child('profile').child(user.uid).update(_userModel.toJson());
+      }
 
-//      Utility.logEvent('update_user');
- //   } catch (error) {
- //     cprint(error, errorIn: 'updateUserProfile');
- //  }
- // }
-
-
+     Utility.logEvent('update_user');
+    } catch (error) {
+      cprint(error, errorIn: 'updateUserProfile');
+  }
+  }
 
 
   void updateFCMToken() {
@@ -573,9 +554,6 @@ class AuthState extends AppState{
 
 
   }
-
-
-
 
 
   followUser({bool removeFollower = false}) {

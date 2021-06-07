@@ -18,12 +18,9 @@ class BottomMenubar extends StatefulWidget{
 }
 
 class _BottomMenubarState extends State<BottomMenubar> {
-  PageController _pageController;
-  int _selectedIcon = 0;
 
   @override
   void initState() {
-    _pageController = widget.pageController;
     super.initState();
   }
 
@@ -92,7 +89,6 @@ class _BottomMenubarState extends State<BottomMenubar> {
               ),
               onPressed: () {
                 setState(() {
-                  _selectedIcon = index;
                   state.setpageIndex = index;
                 });
               },

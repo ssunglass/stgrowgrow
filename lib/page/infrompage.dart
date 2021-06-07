@@ -1,15 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:stgrowgrow/page/profile/profilepage.dart';
 import 'package:stgrowgrow/page/userListWidget.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/state/searchstate.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/model/user.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
+import 'package:stgrowgrow/theme/theme.dart';
 
 
 class InformPage extends StatelessWidget {
@@ -25,8 +23,8 @@ class InformPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          height: fullHeight(context),
-          width: fullWidth(context),
+          height: context.height,
+          width: context.width,
           child: RefreshIndicator(
             key: refreshIndicatorKey,
             onRefresh: () async {
@@ -60,7 +58,7 @@ class _InFormBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authstate = Provider.of<AuthState>(context,listen: false);
+    var authstate = Provider.of<AuthState>(context,listen: false);
     var appstate = Provider.of<AppState>(
       context,
     );
@@ -83,8 +81,7 @@ class _InFormBody extends StatelessWidget {
                           color: Colors.white70,
                           child: InkWell(
                             onTap: () {
-                              Navigator.of(context).pushNamed('/ProfilePage/' + user?.userId);
-                              /*appstate.setpageIndex = 2;*/
+                              appstate.setpageIndex = 2;
                             },
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

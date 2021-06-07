@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/utility.dart';
-import 'file:///D:/Androidproject/stgrowgrow/lib/page/profile/EditProfilePage.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/helper/utility.dart';
@@ -13,13 +12,31 @@ import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/biotile.dart';
 import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/keytile.dart';
-import 'package:stgrowgrow/widgets/emptyList.dart';
+import 'package:stgrowgrow/state/profileState.dart';
 
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key, this.profileId}) : super(key: key);
 
   final String profileId;
+  static MaterialPageRoute getRoute({String profileId}) {
+    return new MaterialPageRoute(
+      builder: (_) => Provider(
+          create: (_) => ProfileState(profileId),
+          child: ChangeNotifierProvider(
+            create: (BuildContext context) => ProfileState(profileId),
+            builder: (_, child) => ProfilePage(
+              profileId: profileId,
+            ),
+
+          ),)
+
+
+
+    );
+
+  }
+
 
 
   _ProfilePageState createState() => _ProfilePageState();
@@ -56,10 +73,9 @@ class _ProfilePageState extends State<ProfilePage>
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      var authstate = Provider.of<AuthState>(context, listen: false);
-      authstate.getProfileUser(userProfileId: widget.profileId);
-      isMyProfile =
-          widget.profileId == null || widget.profileId == authstate.userId;
+      var profilestate = Provider.of<ProfileState>(context, listen: false);
+
+      isMyProfile = profilestate.isMyProfile;
     });
     super.initState();
   }
@@ -191,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-  Widget _keyList(BuildContext context, AuthState authstate, int index,
+  /* Widget _keyList(BuildContext context, AuthState authstate, int index,
       List<KeyModel> keyList ) {
     List<KeyModel> list;
 
@@ -208,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage>
          height: 100,
          child: CustomScreenLoader(
             height: 100,
-           width: fullWidth(context),
+           width: context.width,
            backgroundColor: Colors.white,
       ),
 
@@ -244,6 +260,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
+   */
 
 
 
@@ -251,7 +268,8 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-  Widget _bioList(BuildContext context, AuthState authstate,
+
+  /* Widget _bioList(BuildContext context, AuthState authstate,
       List<BioModel> bioList, ) {
     List<BioModel> list;
 
@@ -301,11 +319,10 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+   */
+
 
     Future<bool> _onWillPop() async {
-      final state = Provider.of<AuthState>(context, listen: false);
-
-      state.removeLastUser();
       return true;
     }
 
@@ -372,7 +389,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                   ),
                 
-                  _keyList(context, authstate,index,keylist),
+                  // _keyList(context, authstate,index,keylist),
 
                   SizedBox(width: 3,height: 10,)
 

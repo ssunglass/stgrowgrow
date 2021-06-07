@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stgrowgrow/theme/theme.dart';
 import 'package:stgrowgrow/widgets/customwidgets.dart';
 
 
@@ -60,7 +61,7 @@ class TabItem extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: textColor,
-                        fontSize: getDimention(context, 12)),
+                        fontSize: context.getDimention(context, 12)),
                   ),
                 )),
           ),

@@ -12,7 +12,7 @@ import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/page/updateApp.dart';
 import 'package:package_info/package_info.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
+import 'package:stgrowgrow/theme/theme.dart';
 
 
 class SplashPage extends StatefulWidget {
@@ -27,7 +27,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       timer();
-
     });
     super.initState();
   }
@@ -88,8 +87,8 @@ class _SplashPageState extends State<SplashPage> {
   Widget _body() {
     var height= 150.0;
     return Container(
-      height: fullHeight(context),
-      width: fullWidth(context),
+      height: context.height,
+      width: context.width,
       child: Container(
         height: height,
         width: height,
@@ -129,7 +128,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     var state = Provider.of<AuthState>(context);
     return Scaffold(
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: CustomColor.white,
       body: state.authStatus == AuthStatus.NOT_DETERMINED
       ? _body()
       : state.authStatus == AuthStatus.NOT_LOGGED_IN

@@ -32,7 +32,7 @@ class Keyword extends StatelessWidget{
 
   void _deltedKeyword(BuildContext context) {
     var state = Provider.of<AuthState>(context, listen:false);
-    state.deleteKeyword();
+    // state.deleteKeyword();
 
   }
 

@@ -4,8 +4,3 @@ enum AuthStatus {
   LOGGED_IN,
 }
 
-enum SortUser {
-  Verified,
-  MaxFollower,
-  major,
-}
