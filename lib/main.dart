@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/routes.dart';
 import 'package:stgrowgrow/state/appstate.dart';
 import 'package:stgrowgrow/state/authstate.dart';
+import 'package:stgrowgrow/state/profileState.dart';
 import 'package:stgrowgrow/state/searchstate.dart';
 
 void main() async{
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    String profileId;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>(create: (_) => AppState()),

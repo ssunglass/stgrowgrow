@@ -9,8 +9,7 @@ class AppIcon {
  static const IconData home = IconData(0xf053, fontFamily: _kFontFam);
  static const IconData homeFill = IconData(0xf053, fontFamily: _kFontFam);
 
-  static const IconData profile = IconData(0xf062, fontFamily: _kFontFam);
-  static const IconData profileFill = IconData(0xf062, fontFamily: _kFontFam);
+
 
 
 

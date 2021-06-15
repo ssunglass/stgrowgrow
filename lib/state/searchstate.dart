@@ -17,14 +17,13 @@ class SearchState extends AppState {
 
   List<KeyModel> _keylist;
   List<KeyModel> _keyFilterlist;
-  List<KeyModel> keyList = [];
 
   List<KeyModel> get keylist {
     if(_keylist == null) {
       return null;
 
     } else {
-      return List.from(_keylist);
+      return List.from(_keyFilterlist);
     }
   }
 
@@ -32,51 +31,34 @@ class SearchState extends AppState {
 
   List<UserModel> _userlist;
 
-  List<UserModel> get userList {
+  List<UserModel> get userlist{
     if(_userlist == null) {
       return null;
-
     } else {
       return List.from(_userlist.reversed);
     }
 
+}
 
-
-  }
 
   List<UserModel> getUserList (UserModel userModel) {
+
     if (userModel == null ) {
       return null;
     }
 
     List<UserModel> list;
 
-    if(!isBusy && userList != null && userList.isNotEmpty) {
-      list = userList.toList();
+    if(!isBusy && userlist != null && userlist.isNotEmpty) {
+      list = userlist.toList();
 
       if (list.isEmpty) {
         list = null;
       }
     }
     return list;
-
-
   }
 
-
-
-
-
-  List<KeyModel> getkeyDetail(List<String> keyIds) {
-    final list = _keylist.where((x) {
-      if (keyIds.contains(x.key)) {
-        return true;
-      } else {
-        return false;
-      }
-    }).toList();
-    return list;
-  }
 
 
   void getUserDataFromDatabase() {
@@ -84,10 +66,10 @@ class SearchState extends AppState {
       isBusy = true;
       kDatabase.child('profile').once().then(
               (DataSnapshot snapshot) {
-                _userlist = [];
+                _userlist = <UserModel>[];
                 if(snapshot.value != null) {
                   var map = snapshot.value;
-                  if(map != null) {
+                  if (map != null) {
                     map.forEach((key,value) {
                       var model = UserModel.fromJson(value);
                       model.key = key;
@@ -96,6 +78,7 @@ class SearchState extends AppState {
 
                   }
 
+
                 } else {
                   _userlist = null;
 
@@ -103,20 +86,13 @@ class SearchState extends AppState {
                 }
                 isBusy = false;
 
-
-
               },
       );
     } catch (error) {
       isBusy = false;
       cprint(error, errorIn: 'getUserDataFromDatabase');
-
     }
   }
-
-
-
-
 
 
 
@@ -155,7 +131,6 @@ class SearchState extends AppState {
 
   void resetFilterList() {
     if (_keylist != null && _keylist.length != _keyFilterlist.length)  {
-
       _keyFilterlist = List.from(_keylist);
       _keyFilterlist.sort((x,y) => y.keyword.compareTo(x.keyword));
       notifyListeners();
@@ -177,12 +152,12 @@ class SearchState extends AppState {
       return;
     }
 
-    // sortBy userlist on the basis of username
+
      else if( keyword != null ) {
       _keyFilterlist = _keylist
           .where((x) =>
       x.keyword != null &&
-          x.keyword.trim().contains(keyword.trim())
+          x.keyword.trim().contains(keyword)
       ).toList();
     }
 

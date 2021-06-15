@@ -39,15 +39,10 @@ class _BottomMenubarState extends State<BottomMenubar> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _icon(null, 0,
-              icon: 0 == state.pageIndex ? AppIcon.homeFill : AppIcon.home,
+              icon: 0 == state.pageIndex ? Icons.home_filled : Icons.home,
               isCustomIcon: true),
           _icon(null, 1,
-              icon: 1 == state.pageIndex ? AppIcon.searchFill : AppIcon.search,
-              isCustomIcon: true),
-          _icon(null, 2,
-              icon: 2 == state.pageIndex
-                  ? AppIcon.profileFill
-                  : AppIcon.profile,
+              icon: 1 == state.pageIndex ? Icons.search : Icons.search,
               isCustomIcon: true),
         ],
       ),

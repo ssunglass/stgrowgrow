@@ -1,18 +1,18 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/state/authstate.dart';
 import 'package:stgrowgrow/model/user.dart';
-import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/model/keyword.dart';
 import 'package:stgrowgrow/model/bio.dart';
-import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/biotile.dart';
-import 'package:stgrowgrow/widgets/customloader.dart';
-import 'package:stgrowgrow/widgets/customwidgets.dart';
-import 'file:///D:/Androidproject/stgrowgrow/lib/widgets/tile/keytile.dart';
 import 'package:stgrowgrow/state/profileState.dart';
+import 'package:stgrowgrow/widgets/customloader.dart';
+import 'package:stgrowgrow/theme/theme.dart';
+import 'package:stgrowgrow/widgets/emptyList.dart';
+import 'package:stgrowgrow/widgets/tile/keytile.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -207,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-  /* Widget _keyList(BuildContext context, AuthState authstate, int index,
+   Widget _keyList(BuildContext context, AuthState authstate,
       List<KeyModel> keyList ) {
     List<KeyModel> list;
 
@@ -243,24 +243,19 @@ class _ProfilePageState extends State<ProfilePage>
     )
 
 
-
         : Wrap(
-           children : <Widget>[
-              Keyword(
-                model: list[index],
-                isDisplayOnProfile: isMyProfile,
-              ),
+           children: list.map(
+                   (item) => Keyword(model: item,)
+           ).toList().cast<Widget>(),
 
 
-             ]
+    );
 
-
-      );
 
 
   }
 
-   */
+
 
 
 
@@ -331,9 +326,9 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context);
+    var profilestate = Provider.of<ProfileState>(context);
     List<KeyModel> keylist;
     List<BioModel> biolist;
-    int index;
     String id = widget.profileId ?? authstate.userId;
 
     if (authstate.keylist != null && authstate.keylist.length > 0) {
@@ -352,8 +347,10 @@ class _ProfilePageState extends State<ProfilePage>
 
               child: Column(
                 children: <Widget>[
+                  SizedBox(height: 5,),
+
                   UserProfileWidget(
-                    user: authstate.profileUserModel,
+                    user: profilestate.profileUserModel,
                     isMyProfile: isMyProfile
                 ),
 
@@ -389,9 +386,19 @@ class _ProfilePageState extends State<ProfilePage>
 
                   ),
                 
-                  // _keyList(context, authstate,index,keylist),
+                   _keyList(context, authstate,  keylist),
 
-                  SizedBox(width: 3,height: 10,)
+                  Container(
+                    margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+                    child:  Divider(
+                      thickness: 3,
+                    ),
+
+                  ),
+
+
+
+
 
 
 
@@ -467,12 +474,14 @@ class UserProfileWidget extends StatelessWidget {
           ],
         ),
 
-        Padding(
+        Container(
+          child:Padding(
           padding: EdgeInsets.only(top: 5, left: 9),
           child: Text(
             '${user.userName}',
           ),
         ),
+    ),
 
        Container(
          margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
@@ -482,21 +491,15 @@ class UserProfileWidget extends StatelessWidget {
 
        ),
 
-
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
            Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-             child: Text('${user.department}'),
+             child: Text('${user.department}계열, ${user.major} 재학'),
           ),
 
-            Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-             child: Text('${user.major}'),
-        ),
 
-        ],
 
-        ),
+
+
+
 
         Container(
           margin: const EdgeInsets.only(left: 10, right: 100,top: 15),

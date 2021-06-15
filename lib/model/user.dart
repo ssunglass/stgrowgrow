@@ -13,7 +13,6 @@ class UserModel{
   String summary;
   String bio;
 
-  String keyword;
 
 
   bool isVerified;
@@ -63,7 +62,6 @@ class UserModel{
     this.major,
     this.interestList,
 
-    this.keyword,
 
 
 
@@ -93,7 +91,6 @@ class UserModel{
     followers = map['followers'];
     following = map['following'];
 
-    keyword = map['keyword'];
 
 
 
@@ -158,7 +155,6 @@ class UserModel{
       'followerList' : followerList,
       'followingList' : followingList,
 
-      'keyword' : keyword,
       'department' : department,
 
 
@@ -218,7 +214,6 @@ class UserModel{
       interestList: interestList ?? this.interestList,
       followerList: followerList ?? this.followerList,
 
-      keyword: keyword ?? this.keyword,
 
 
 

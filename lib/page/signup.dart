@@ -36,7 +36,7 @@ class _SignUpState extends State<SignUp>{
   String _selectedDepartment = '인문';
   String _selectedUniv='서울';
   List _univOptions = ['서울','경기','강원','제주','대구/경북','충청','전북/전남'];
-  List _departmentOptions = ['인문','공학','사회','교육','자연','의약','예체능'];
+  List _departmentOptions = ['인문','공학','사회','교육','자연','의약','예체능','기타'];
   List<String> interestList = [
     "코딩",
     "마케팅",

@@ -8,6 +8,8 @@ import 'package:stgrowgrow/state/appstate.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/model/user.dart';
 import 'package:stgrowgrow/theme/theme.dart';
+import 'package:stgrowgrow/page/profile/profilepage.dart';
+
 
 
 class InformPage extends StatelessWidget {
@@ -25,11 +27,10 @@ class InformPage extends StatelessWidget {
         child: Container(
           height: context.height,
           width: context.width,
-          child: RefreshIndicator(
+           child:  RefreshIndicator(
             key: refreshIndicatorKey,
             onRefresh: () async {
-              var searchState =
-              Provider.of<SearchState>(context, listen: false);
+              var searchState = Provider.of<SearchState>(context, listen: false);
               searchState.getUserDataFromDatabase();
               return Future.value(true);
             },
@@ -37,7 +38,7 @@ class InformPage extends StatelessWidget {
               refreshIndicatorKey: refreshIndicatorKey,
               scaffoldKey: scaffoldKey,
             ),
-          ),
+           ),
         ),
       ),
     );
@@ -59,16 +60,11 @@ class _InFormBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var authstate = Provider.of<AuthState>(context,listen: false);
-    var appstate = Provider.of<AppState>(
-      context,
-    );
-    String myId = authstate.userModel.key;
 
-
-
-    return Consumer<SearchState>(
+    return  Consumer<SearchState>(
       builder: (context, state, child) {
-        final List<UserModel> list = state.getUserList(authstate.userModel);
+        // final List<UserModel> list = state.getUserList(authstate.userModel);
+        final list = state.userlist;
 
         return CustomScrollView(
             slivers: <Widget>[
@@ -81,7 +77,8 @@ class _InFormBody extends StatelessWidget {
                           color: Colors.white70,
                           child: InkWell(
                             onTap: () {
-                              appstate.setpageIndex = 2;
+                              Navigator.push(
+                                  context, ProfilePage.getRoute(profileId: authstate.userModel.userId));
                             },
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +97,6 @@ class _InFormBody extends StatelessWidget {
                                     padding: EdgeInsets.only(top: 5, left: 9),
                                     child: Text(
                                       authstate.userModel.userName,
-
                                     ),
                                   ),
                                   Padding(
@@ -114,7 +110,8 @@ class _InFormBody extends StatelessWidget {
                                     ),
                                   ),
                                 ]),
-                          )))
+                          ))
+                  )
               ),
 
               SliverToBoxAdapter(
@@ -130,7 +127,6 @@ class _InFormBody extends StatelessWidget {
 
               SliverToBoxAdapter(
                   child: Container(
-                    color: Colors.amberAccent,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
@@ -155,21 +151,27 @@ class _InFormBody extends StatelessWidget {
                   ),
               ),
 
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 5,),
+                ),
+
+
+
 
                 SliverStaggeredGrid.countBuilder(
                   crossAxisCount: 4,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
                   staggeredTileBuilder: (int index) =>
                     StaggeredTile.fit(2),
                   itemBuilder: (context, index) =>
                         UserTile(
                           user: list[index],
-                          myId: myId,
+
                         ),
 
 
-                  itemCount: list.length)
+                  itemCount: list.length )
 
 
             ]

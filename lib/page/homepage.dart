@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = new GlobalKey<ScaffoldMessengerState>();
   final refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
   int pageIndex = 0;
+  String profileId;
 
   @override
   void initState(  ) {
@@ -108,9 +109,6 @@ class _HomePageState extends State<HomePage> {
         break;
       case 1 :
         return SearchPage(scaffoldKey: _scaffoldKey,);
-        break;
-      case 2:
-        return ProfilePage();
         break;
       default:
         return InformPage(
