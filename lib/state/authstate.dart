@@ -56,7 +56,7 @@ class AuthState extends AppState{
 
   }
 
-  List<BioModel> get bioist {
+  List<BioModel> get biolist {
     if(_biolist == null) {
       return null;
     } else {

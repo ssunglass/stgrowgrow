@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:stgrowgrow/helper/utility.dart';
 import 'package:stgrowgrow/state/authstate.dart';
@@ -13,6 +12,7 @@ import 'package:stgrowgrow/widgets/customloader.dart';
 import 'package:stgrowgrow/theme/theme.dart';
 import 'package:stgrowgrow/widgets/emptyList.dart';
 import 'package:stgrowgrow/widgets/tile/keytile.dart';
+import 'package:stgrowgrow/widgets/tile/biotile.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -50,6 +50,7 @@ class _ProfilePageState extends State<ProfilePage>
   TextEditingController _bio;
   TextEditingController _date;
   KeyModel _keyModel;
+
 
 
   String date;
@@ -150,11 +151,45 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
-  void showYear() async {
+  void showYear()  {
+    final year = DateTime.now().year;
 
-    DateTime picked = await showDatePicker(
+    showDialog(
       context: context,
-      firstDate: DateTime(2000),
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            height: MediaQuery.of(context).size.height /4.0 ,
+            width: MediaQuery.of(context).size.width,
+            child: YearPicker(
+              selectedDate: DateTime.now(),
+              firstDate: DateTime(year - 20),
+              lastDate:DateTime.now() ,
+              onChanged: (value) {
+                date = value.toString();
+                _date.text = Utility.getdob(date);
+                Navigator.of(context).pop();
+              },
+
+
+            ),
+
+
+          ),
+
+
+        );
+
+      }
+
+
+    );
+
+
+
+    /* DateTime picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(1980),
       initialDate: DateTime(DateTime.now().year),
       lastDate: DateTime(DateTime.now().year),
 
@@ -164,17 +199,8 @@ class _ProfilePageState extends State<ProfilePage>
         date = picked.toString();
         _date.text = Utility.getdob(date);
       }
-    });
-    
-
-
+    }); */
   }
-
-  void openDialog () {
-
-
-  }
-
 
 
   KeyModel createKeyModel() {
@@ -202,9 +228,6 @@ class _ProfilePageState extends State<ProfilePage>
 
 
   }
-
-
-
 
 
    Widget _keyList(BuildContext context, AuthState authstate,
@@ -264,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage>
 
 
 
-  /* Widget _bioList(BuildContext context, AuthState authstate,
+   Widget _bioList(BuildContext context, AuthState authstate,
       List<BioModel> bioList, ) {
     List<BioModel> list;
 
@@ -281,10 +304,10 @@ class _ProfilePageState extends State<ProfilePage>
 
     return authstate.isbusy
         ? Container(
-      height: fullHeight(context) - 180,
+      height: context.height - 180,
            child: CustomScreenLoader(
             height: double.infinity,
-           width: fullWidth(context),
+           width: context.width,
           backgroundColor: Colors.white,
       ),
     )
@@ -314,7 +337,7 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-   */
+
 
 
     Future<bool> _onWillPop() async {
@@ -333,6 +356,10 @@ class _ProfilePageState extends State<ProfilePage>
 
     if (authstate.keylist != null && authstate.keylist.length > 0) {
       keylist = authstate.keylist.where((x) => x.userId == id).toList();
+    }
+
+    if (authstate.biolist != null && authstate.biolist.length > 0) {
+      biolist = authstate.biolist.where((x) => x.userId == id).toList();
     }
 
 
@@ -354,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage>
                     isMyProfile: isMyProfile
                 ),
 
-                  SizedBox(width: 3,height: 10,),
+
 
                   Container(
                     alignment: Alignment.centerRight,
@@ -386,15 +413,84 @@ class _ProfilePageState extends State<ProfilePage>
 
                   ),
                 
-                   _keyList(context, authstate,  keylist),
+                    _keyList(context, authstate,  keylist),
 
                   Container(
-                    margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+                    margin: const EdgeInsets.only(left: 170, right: 170,top: 15),
                     child:  Divider(
-                      thickness: 3,
+                      thickness: 10,
+                      color: Colors.black,
                     ),
 
                   ),
+
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.only(left: 50),
+                        child:Text('Footprint'),
+                      ),
+
+
+                      Container(
+                        child: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                         showDialog(
+                         context: context,
+                         builder: (_) => AlertDialog(
+                          content: SingleChildScrollView(
+                             child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                               children: <Widget>[
+                                 InkWell(
+                                   onTap: showYear,
+                                   child: _entry('Year', isenable: false, controller: _date),
+                                 ),
+                                 Padding(
+                                   padding: const EdgeInsets.all(16.0),
+                                   child: TextField(
+                                     decoration: InputDecoration(
+                                         border: OutlineInputBorder(), labelText: "Description"),
+                                     maxLines: 10,
+                                     controller: _bio,
+                                   ),
+                                 ),
+                                 GestureDetector(
+                                   onTap: _keywordSubmitButton,
+                                   child: Center(
+                                     child: Text('등록'),
+                                   ),
+                                 ),
+
+
+                      ],
+                      ),
+                      ),
+                      ),
+                      );
+                      }, 
+
+                        ),
+
+                      ),
+
+                    ],
+
+                  ),
+
+
+
+
+
+
+
+                  // _bioList(context, authstate, biolist),
+
 
 
 
@@ -484,7 +580,7 @@ class UserProfileWidget extends StatelessWidget {
     ),
 
        Container(
-         margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+         margin: const EdgeInsets.only(left: 10, right: 150,top: 10),
          child:  Divider(
            thickness: 3,
          ),
@@ -496,13 +592,8 @@ class UserProfileWidget extends StatelessWidget {
           ),
 
 
-
-
-
-
-
         Container(
-          margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+          margin: const EdgeInsets.only(left: 10, right: 150,top: 10),
           child:  Divider(
             thickness: 3,
           ),
@@ -517,12 +608,14 @@ class UserProfileWidget extends StatelessWidget {
 
 
         Container(
-          margin: const EdgeInsets.only(left: 10, right: 100,top: 15),
+          margin: const EdgeInsets.only(left: 10, right: 150,top: 10),
           child:  Divider(
             thickness: 3,
           ),
 
         ),
+
+
 
 
 
