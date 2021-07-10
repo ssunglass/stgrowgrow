@@ -151,6 +151,26 @@ class _ProfilePageState extends State<ProfilePage>
 
   }
 
+  void _bioSubmitButton() async {
+
+    if(_bio.text ==null || _bio.text.isEmpty) {
+      return;
+
+    }
+
+    var state = Provider.of<AuthState>(context, listen: false);
+
+    BioModel bioModel = createBioModel();
+
+    state.createBio(bioModel);
+
+    Navigator.of(context).pop();
+
+
+
+  }
+
+
   void showYear()  {
     final year = DateTime.now().year;
 
@@ -277,14 +297,6 @@ class _ProfilePageState extends State<ProfilePage>
 
 
   }
-
-
-
-
-
-
-
-
 
 
    Widget _bioList(BuildContext context, AuthState authstate,
@@ -451,19 +463,15 @@ class _ProfilePageState extends State<ProfilePage>
                                    onTap: showYear,
                                    child: _entry('Year', isenable: false, controller: _date),
                                  ),
+                                 
                                  Padding(
                                    padding: const EdgeInsets.all(16.0),
-                                   child: TextField(
-                                     decoration: InputDecoration(
-                                         border: OutlineInputBorder(), labelText: "Description"),
-                                     maxLines: 10,
-                                     controller: _bio,
-                                   ),
+                                   child: _entry('Bio',  controller: _bio, maxLine: 5)
                                  ),
                                  GestureDetector(
-                                   onTap: _keywordSubmitButton,
+                                   onTap: _bioSubmitButton,
                                    child: Center(
-                                     child: Text('등록'),
+                                     child: Text('추가'),
                                    ),
                                  ),
 
